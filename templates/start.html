@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Docker Start</title>
+</head>
+<body>
+<h1>Démarrer le conteneur Docker</h1>
+
+<form method="POST" action="{% url 'bouton_start' %}">
+    {% csrf_token %}
+    <button type="submit">Start Container</button>
+</form>
+
+{% if container %}
+    <p>Conteneur : {{ container }}</p>
+{% endif %}
+</body>
+</html>

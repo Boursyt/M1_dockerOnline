@@ -10,17 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from itertools import filterfalse
+from os import environ
 from pathlib import Path
+import environ
+from dotenv import load_dotenv
+unloaded = environ.Env()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# Reading .env file
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nfy&bv$ugoa9h6#tumxqs!m__amjfy$*-sg8d=cf2owybolrlt'
+secrets_key = 'django-insecure-nfy&bv$ugoa9h6#tumxqs!m__amjfy$*-sg8d=cf2owybolrlt'
+SECRET_KEY = secrets_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -105,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-fr'
 
 TIME_ZONE = 'UTC'
 
