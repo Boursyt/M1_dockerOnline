@@ -9,6 +9,15 @@
 
 <form method="POST" action="{% url 'bouton_start' %}">
     {% csrf_token %}
+    <textarea name="container" placeholder="Nom du conteneur"></textarea>
+    <textarea name="image" placeholder="url de l'image"></textarea>
+    <textarea name="ports_hote" placeholder="port hôte"></textarea>
+    <textarea name="ports_rediriger" placeholder="port redirection"></textarea>
+    <textarea name="volume" placeholder="volume(vide = pas de volume)"></textarea>
+    <textarea name="command" placeholder="commande"></textarea>
+    <textarea name="env" placeholder="env"></textarea>
+    <textarea name="network" placeholder="network (vide=default)"></textarea>
+    
     <button type="submit">Start Container</button>
 </form>
 

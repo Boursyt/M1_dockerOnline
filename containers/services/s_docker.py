@@ -32,6 +32,7 @@ class DockerService:
                 environment=self.environment,
                 ports=self.ports,
                 volumes=self.volumes,
+                network=self.network
             )
             return container
         except errors.APIError as e:
