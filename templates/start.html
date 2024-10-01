@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Docker Start</title>
@@ -21,8 +21,19 @@
     <button type="submit">Start Container</button>
 </form>
 
-{% if container %}
-    <p>Conteneur : {{ container }}</p>
-{% endif %}
+
+<form method="post" action="{% url 'dockerfile' %}">
+    {% csrf_token %}
+    <input type="file" name="dockerfile"> votre fichier Dockerfile
+    <button type="submit">start</button>
+</form>
+
+<form method="post" enctype="multipart/form-data" action="{% url 'compose' %}">
+    {% csrf_token %}
+    <input type="file" name="composefile"> Votre fichier compose.yml
+    <button type="submit">Start</button>
+</form>
+
+
 </body>
 </html>

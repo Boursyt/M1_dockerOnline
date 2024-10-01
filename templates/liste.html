@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>liste</title>
+</head>
+<body>
+    <form method="POST" action="{% url 'bouton_list' %}">
+        {% csrf_token %}
+        <button type="submit">list</button>
+    </form>
+    
+    {% if containers %}
+        <h2>Containers:</h2>
+        <ul>
+            {% for container in containers %}
+                <li>{{ container }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</body>
+</html>
