@@ -43,15 +43,15 @@ def bouton_start(request):
 
 def dockerfile(request):
     if request.method == 'POST':
-        dockerfile = request.FILES.get('dockerfile')
-        if not dockerfile:
-            return JsonResponse({'error': 'No Dockerfile provided'}, status=400)
-
+        if 'dockerfile' not in request.FILES:
+            return JsonResponse({'error': 'No file provided'}, status=400)
+        dockerfile = request.FILES['dockerfile']
         try:
             # Debugging: Check if the file is read correctly
             print(dockerfile.read().decode('utf-8'))
             dockerfile.seek(0)  # Reset file pointer after reading for debugging
-
+            if dockerfile is None:
+                return JsonResponse({'error': 'Invalid or empty Dockerfile'}, status=400)
             image = DockerService().run_dockerfile(dockerfile)
             return JsonResponse({'image': str(image)})
         except Exception as e:
@@ -69,12 +69,9 @@ def compose(request):
         try:
             # Lire le contenu du fichier YAML
             compose_data = yaml.safe_load(composefile.read())
-
             # Vérifier si compose_data est None
             if compose_data is None:
                 return JsonResponse({'error': 'Invalid or empty YAML file'}, status=400)
-
-
             compose_result = DockerService().run_compose(compose_data)
             return JsonResponse({'compose': compose_result})
 

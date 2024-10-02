@@ -77,41 +77,49 @@ class DockerService:
         return client.images.list()
 
     def run_dockerfile(self, dockerfile):
-        image, logs = client.images.build(fileobj=dockerfile, tag='my_image')
-        for log in logs:
-            print(log)
-        return image
+        try:
+            if dockerfile is None:
+                raise ValueError("Dockerfile is None")
+            # Build the image from the Dockerfile
+            image, _ = client.images.build(fileobj=dockerfile.file, rm=True, tag="my_image:latest")
+            print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
+
+            # Run a container using the built image
+            container = client.containers.run(image=image.tags[0], detach=True)
+            print(f"Container started with ID: {container.id}")
+            return container
+        except (errors.BuildError, errors.APIError) as e:
+            print(f"Error building or running container: {e}")
+            return None
 
     def run_compose(self, compose_data):
         try:
             if compose_data is None:
                 raise ValueError("Compose data is None, possibly due to an invalid YAML file.")
-
-
             services = compose_data.get('services', {})
-
             if not services:
                 raise ValueError("No services found in compose data")
-
             for service_name, service_data in services.items():
                 image = service_data.get('image')
-
                 if not image:
                     raise errors.DockerException(f"Missing mandatory 'image' key in service: {service_name}")
-
-                # Préparer les options pour la création du conteneur
                 options = {key: value for key, value in service_data.items() if key != 'image'}
-
-                # Créer et démarrer le conteneur
                 container = client.containers.run(image=image, name=service_name, **options)
                 print(f"Container {service_name} created with ID: {container.id}")
-
             return "Containers created successfully"
-
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
             return f"Error creating containers: {str(e)}"
 
-
+    def get_logs(self):
+        container = client.containers.get(self.name)
+        if container:
+            try:
+                logs = container.logs()
+                return logs.decode('utf-8')
+            except errors.APIError as e:
+                print(f"Error getting logs: {e}")
+                return None
+        return None
     def __str__(self):
         return 'DockerService(name={}, image={}, command={}, environment={}, ports={}, volumes={}, network={})'.format(
             self.name, self.image, self.command, self.environment, self.ports, self.volumes, self.network)

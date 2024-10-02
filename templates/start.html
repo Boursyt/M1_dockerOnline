@@ -22,7 +22,7 @@
 </form>
 
 
-<form method="post" action="{% url 'dockerfile' %}">
+<form method="post" enctype="multipart/form-data" action="{% url 'dockerfile' %}">
     {% csrf_token %}
     <input type="file" name="dockerfile"> votre fichier Dockerfile
     <button type="submit">start</button>
