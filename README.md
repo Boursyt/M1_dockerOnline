@@ -1,5 +1,9 @@
 # Welcome to the M1_dockerOnline wiki!
-
+## modules requis
+Vous pouvez installer facilement les module requis avec:
+```sh
+pip install -r requirements.txt
+```
 ## Technologies utilisées
 
 - Django, un framework web pour Python

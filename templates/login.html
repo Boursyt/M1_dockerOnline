@@ -5,10 +5,11 @@
     <title>login</title>
 </head>
 <body>
-<form method="POST" action="{% url 'login' %}">
+<form method="POST" >
     <h1>Connexion</h1>
-    <textarea name="username" placeholder="Nom d'utilisateur"></textarea>
-    <input type="password" name="password" placeholder="mot de passe">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Connexion</button>
 </form>
 
 </body>

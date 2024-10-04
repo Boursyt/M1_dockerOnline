@@ -5,6 +5,21 @@
     <title>home</title>
 </head>
 <body>
-Bienvenue sur le site de gestion de containers
+{% if user.is_authenticated %}
+    <a>
+        Bienvenue {{ user.username }} sur le site de gestion de containers
+        <a href="{% url 'logout' %}">logout</a>
+
+    </a>
+{% else %}
+    <p>
+        Bienvenue sur le site de gestion de containers, connectez-vous !
+        <a href="{% url 'login' %}">connections</a>
+        <a href="{% url 'register' %}">creer un compte</a>
+
+
+    </p>
+{% endif %}
+
 </body>
 </html>
