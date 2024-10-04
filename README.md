@@ -4,6 +4,9 @@ Vous pouvez installer facilement les module requis avec:
 ```sh
 pip install -r requirements.txt
 ```
+## Parametrage de l'interpreteur python
+![image](https://github.com/user-attachments/assets/2654cc01-a0b8-4187-aa87-86401a100b98)
+
 ## Technologies utilisées
 
 - Django, un framework web pour Python
