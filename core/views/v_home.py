@@ -2,4 +2,9 @@ from django.shortcuts import render
 
 
 def homepage(request):
-    return render(request, 'home.html')
+    context = {
+        'menu': {
+            'page': 'home'
+        }
+    }
+    return render(request, 'home.html',context)

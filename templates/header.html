@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- header.html -->
+{% load static %}
+<head>{% include 'head.html' %}</head>
 
-</body>
-</html>
+<header class="header">
+
+    <div class="logo">
+        <img  src="{% static 'images/Docker-Emblem.png' %}" alt="logo">
+
+    </div>
+    <div class="list">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link {% if menu.page == 'home' %}active{% endif %}" aria-current="page">Accueil</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'start_container' %}" class="nav-link {% if menu.page == 'create' %}active{% endif %}" aria-current="page">Créer des conteneurs</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'liste_page' %}" class="nav-link {% if menu.page == 'liste' %}active{% endif %}" aria-current="page">Liste des conteneurs</a>
+            </li>
+        </ul>
+
+    </div>
+
+    </div>
+
+<div class="login">
+    <label class="switch">
+        <input type="checkbox" id="theme">
+        <span class="slider round"></span>
+        <script src="{% static 'js/toggleTheme.js' %}"></script>
+    </label>
+    <ul class="nav nav-pills">
+        {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">Log out</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a href="{% url 'login' %}" class="nav-link">Log in</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'register' %}" class="nav-link">Register</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+</header>

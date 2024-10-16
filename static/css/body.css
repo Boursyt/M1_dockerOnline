@@ -1,0 +1,7 @@
+body {
+    margin: 0; /* Supprime la marge par défaut du body */
+    padding: 0; /* Supprime le padding par défaut du body */
+    /*background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(35,82,103,1) 40%, rgba(0,212,255,1) 100%);
+*/
+}

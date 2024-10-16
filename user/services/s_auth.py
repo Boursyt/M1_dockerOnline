@@ -13,8 +13,10 @@ class authentification:
         self.email = None
         self.token = None
         self.issuperuser = None
+
     def logout_user(self, request):
         logout(request)  # Déconnexion de l'utilisateur
+
     def register_user(username, first_name, last_name, email, password):
         user = User.objects.create_user(
             username=username,

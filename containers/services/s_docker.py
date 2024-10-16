@@ -1,6 +1,10 @@
 import docker
+from django.contrib.auth import get_user
 from docker import errors
+from django.core.exceptions import ObjectDoesNotExist
 import yaml
+from urllib3 import request
+from containers.models import Container
 
 # variable global
 #client = docker.from_env()
@@ -15,6 +19,51 @@ class DockerService:
         self.volumes = volumes
         self.network = network
 
+
+    def dockerStatus(self):
+        try:
+            container = client.containers.get(self.name)
+            return container.status
+        except errors.NotFound:
+            return 'Container not found'
+        except errors.APIError as e:
+            print(f"Error getting container status: {e}")
+            return 'Error'
+
+    #on ajoute le container a la base de données (definie dans m_container)
+    def addDockerBDD(self,request):
+        try:
+            specs = f'{self.ports},{self.command},{self.environment},{self.network},{self.volumes}'
+            getStatus = self.dockerStatus()
+            container = Container.objects.create(
+                user=get_user(request),
+                image=self.image,
+                name=self.name,
+                spec=specs,
+                status=getStatus
+            )
+            container.save()
+        except Exception as e:
+            print(f"Error adding container to database: {e}")
+
+    def removeDockerBDD(self):
+        try:
+            # Trouver le conteneur en fonction du nom (ou un autre critère, selon tes besoins)
+            container = Container.objects.get(name=self.name)
+
+            # Ici, on peut aussi gérer la logique Docker si tu veux arrêter ou supprimer le conteneur Docker côté Docker Engine
+            self.docker_stop()
+
+            # Supprimer l'objet de la base de données
+            container.delete()
+
+            print(f"Le conteneur '{self.name}' a été supprimé de la base de données.")
+        except ObjectDoesNotExist:
+            print(f"Le conteneur '{self.name}' n'existe pas dans la base de données.")
+        except Exception as e:
+            print(f"Une erreur s'est produite lors de la suppression du conteneur : {e}")
+
+
     def download_image(self, url):
         try:
             self.image = client.images.pull(url)
@@ -23,7 +72,7 @@ class DockerService:
             self.image = None
         return self.image
 
-    def docker_create(self):
+    def docker_create(self,request):
         self.image = self.download_image(self.image)
         try:
             container = client.containers.create(
@@ -35,6 +84,7 @@ class DockerService:
                 volumes=self.volumes,
                 network=self.network
             )
+            self.addDockerBDD(request)
             return container
         except errors.APIError as e:
             print(f"Error creating container: {e}")
@@ -65,6 +115,7 @@ class DockerService:
         if container:
             try:
                 container.remove()
+                self.removeDockerBDD()
                 return container
             except errors.APIError as e:
                 print(f"Error removing container: {e}")
@@ -76,7 +127,7 @@ class DockerService:
     def list_images(self):
         return client.images.list()
 
-    def run_dockerfile(self, dockerfile):
+    def run_dockerfile(self,request, dockerfile):
         try:
             if dockerfile is None:
                 raise ValueError("Dockerfile is None")
@@ -86,13 +137,14 @@ class DockerService:
 
             # Run a container using the built image
             container = client.containers.run(image=image.tags[0], detach=True)
+            self.addDockerBDD(request)
             print(f"Container started with ID: {container.id}")
             return container
         except (errors.BuildError, errors.APIError) as e:
             print(f"Error building or running container: {e}")
             return None
 
-    def run_compose(self, compose_data):
+    def run_compose(self,request, compose_data):
         try:
             if compose_data is None:
                 raise ValueError("Compose data is None, possibly due to an invalid YAML file.")
@@ -106,6 +158,7 @@ class DockerService:
                 options = {key: value for key, value in service_data.items() if key != 'image'}
                 container = client.containers.run(image=image, name=service_name, **options)
                 print(f"Container {service_name} created with ID: {container.id}")
+                self.addDockerBDD(request)
             return "Containers created successfully"
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
             return f"Error creating containers: {str(e)}"

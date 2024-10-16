@@ -1,0 +1,149 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    background: #282828;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+section {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden; /* pour s'assurer que les cercles ne débordent pas */
+}
+
+@keyframes moveAndRotate {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+        transform: translate(1.5rem, 2rem) rotate(360deg); /* Ajuste selon le mouvement désiré */
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg);
+    }
+}
+header{
+    z-index: 4; !important;
+    position: relative;
+}
+.circle-1 {
+    position: absolute;
+    top: 7%;
+    left: 15%;
+    background: linear-gradient(to right, #133c55, #0195eb);
+    height: 350px;
+    width: 350px;
+    border-radius: 50%;
+    z-index: 1;
+    animation: moveAndRotate 5s infinite; /* Animation infinie */
+
+}
+
+.circle-2 {
+    position: absolute;
+    bottom: 8%;
+    right: 25%;
+    background: linear-gradient(to right, #745a05, #6f580a);
+    height: 400px;
+    width: 400px;
+    border-radius: 50%;
+    z-index: 1;
+    animation: moveAndRotate 5s infinite alternate;
+
+}
+
+.circle-3 {
+    position: absolute;
+    top: 20%;
+    right: 8%;
+    background: linear-gradient(to right, #2f1ac3, #044975);
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    z-index: 1;
+    animation: moveAndRotate 5s infinite alternate-reverse;
+
+}
+
+.acrylic-bg {
+
+    position: absolute;
+    overflow-y: auto ;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(39, 39, 39, 0.3);
+    backdrop-filter: blur(60px);
+    -webkit-backdrop-filter: blur(60px);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.3);
+    z-index: 2; /* S'assure que le flou est au-dessus des cercles */
+}
+.content {
+    position: absolute;
+    top: 0;
+    z-index: 3;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 5%;
+
+}
+
+.username {
+    font-size: 2rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #FFC107, #FFA000);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.dockertexte {
+    font-size: 2.3rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #157fb7, #035183);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.TexteAcceuil {
+    padding-top: 1%;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+}
+.divbutton{
+    display: flex;
+    flex-direction: row;
+    margin: 3%;
+}
+.boutton{
+    display: flex;
+    flex-direction: row;
+    padding: 1rem 1.5rem;
+    width: 12rem;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1.5rem;
+    background: linear-gradient(to right, #FFC107, #FFA000);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bolder  ;
+    font-size: 1.1rem;
+}
+.boutton:hover{
+    background: linear-gradient(to right, #c99a08, #b77206);
+
+}

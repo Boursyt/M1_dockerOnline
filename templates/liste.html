@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>liste</title>
-</head>
+
 <body>
+{% include 'header.html' %}
+<main>
     <form method="POST" action="{% url 'bouton_list' %}">
         {% csrf_token %}
         <button type="submit">list</button>
@@ -19,5 +16,5 @@
         </ul>
     {% endif %}
 
-</body>
+</main></body>
 </html>
