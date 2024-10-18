@@ -1,16 +1,19 @@
-
-<body>
 {% include 'header.html' %}
-<main>
+{% load static %}
 <body>
-
-    <h1>Inscription</h1>
-    <form method="POST" action="{% url 'register' %}">
+<section class="bodyBG">
+    <form class="card" method="POST" action="{% url 'register' %}">
+        <h1 class="title">Inscription</h1>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Inscription</button>
+        <div class="forms">
+            <input type="text" id="username" name="username" class="forms-input" placeholder="Nom d'utilisateur" required>
+            <input type="text" id="first_name" name="first_name" class="forms-input" placeholder="Prénom" required>
+            <input type="text" id="last_name" name="last_name" class="forms-input" placeholder="Nom" required>
+            <input type="email" id="email" name="email" class="forms-input" placeholder="Email" required>
+            <input type="password" id="password1" name="password1" class="forms-input" placeholder="Mot de passe" required>
+            <input type="password" id="password2" name="password2" class="forms-input" placeholder="Confirmer le mot de passe" required>
+        </div>
+        <button class="boutton" type="submit">S'inscrire</button>
     </form>
-
-
+</section>
 </body>
-</main> 

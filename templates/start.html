@@ -1,36 +1,56 @@
-
-<body>
 {% include 'header.html' %}
+{% load static %}
 <main>
-<body>
-<h1>Démarrer le conteneur Docker</h1>
-
-<form method="POST" action="{% url 'bouton_start' %}">
-    {% csrf_token %}
-    <textarea name="container" placeholder="Nom du conteneur"></textarea>
-    <textarea name="image" placeholder="url de l'image"></textarea>
-    <textarea name="ports_hote" placeholder="port hôte"></textarea>
-    <textarea name="ports_rediriger" placeholder="port redirection"></textarea>
-    <textarea name="volume" placeholder="volume(vide = pas de volume)"></textarea>
-    <textarea name="command" placeholder="commande"></textarea>
-    <textarea name="env" placeholder="env"></textarea>
-    <textarea name="network" placeholder="network (vide=default)"></textarea>
-    <button type="submit">Start Container</button>
-</form>
-
-
-<form method="post" enctype="multipart/form-data" action="{% url 'dockerfile' %}">
-    {% csrf_token %}
-    <input type="file" name="dockerfile"> votre fichier Dockerfile
-    <button type="submit">start</button>
-</form>
-
-<form method="post" enctype="multipart/form-data" action="{% url 'compose' %}">
-    {% csrf_token %}
-    <input type="file" name="composefile"> Votre fichier compose.yml
-    <button type="submit">Start</button>
-</form>
-
-
-</body>
+    <body>
+        <div class="typeContainer">
+            <h1 class="title">Lancer un docker en choissisant les options</h1>
+        
+            <form class="DockerForms" method="POST" action="{% url 'bouton_start' %}">
+                {% csrf_token %}
+                <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
+                <textarea class="texteareaDocker" name="image" placeholder="url de l'image" required></textarea>
+                <textarea class="texteareaDocker" name="ports_hote" placeholder="port hôte"></textarea>
+                <textarea class="texteareaDocker" name="ports_rediriger" placeholder="port redirection"></textarea>
+                <textarea class="texteareaDocker" name="volume" placeholder="volume(vide = pas de volume)"></textarea>
+                <textarea class="texteareaDocker" name="command" placeholder="commande"></textarea>
+                <textarea class="texteareaDocker" name="env" placeholder="env"></textarea>
+                <textarea class="texteareaDocker" name="network" placeholder="network (vide=default)"></textarea>
+                <button class="boutton" style="margin: 1%" type="submit">Start</button>
+            </form>
+        
+        </div>
+        
+        <div class="typeContainer">
+            <h1 class="title">Lancer un docker à partir d'un dockerfile</h1>
+            <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'dockerfile' %}" id="dockerUploadForm">
+                {% csrf_token %}
+                <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
+                <div id="dockerDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
+                    <p>Drag & drop your Dockerfile here or click to upload</p>
+                    <input type="file" name="dockerfile" id="dockerFileInput" style="display: none;">
+                </div>
+                <p id="dockerFileName" style="margin-top: 10px; color: #666;"></p>
+                <button class="boutton" style="margin: 1%" type="submit">Start</button>
+            </form>
+        </div>
+        
+        <div class="typeContainer">
+            <h1 class="title">Lancer un docker à partir d'un compose.yml</h1>
+            <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'compose' %}" id="composeUploadForm">
+                {% csrf_token %}
+                <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
+                <div id="composeDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
+                    <p>Drag & drop your compose.yml here or click to upload</p>
+                    <input type="file" name="composefile" id="composeFileInput" style="display: none;">
+                </div>
+                <p id="composeFileName" style="margin-top: 10px; color: #666;"></p>
+                <button class="boutton" style="margin: 1%" type="submit">Start</button>
+            </form>
+        </div>
+        
+        
+        
+        
+        <script src="{% static 'js/DropZone.js' %}"></script>
+    </body>
 </main>

@@ -4,7 +4,17 @@ from django.http import JsonResponse
 
 
 def liste_page(request):
-    return render(request, 'liste.html')
+    user = request.user
+
+    if user.is_authenticated:
+        context = {
+            'menu': {
+                'page': 'liste'
+            }
+        }
+        return render(request, 'liste.html', context)
+    else:
+        return render(request, 'home.html')
 
 def bouton_list(request):
     if request.method == 'POST':

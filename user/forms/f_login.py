@@ -1,7 +1,10 @@
-from pyclbr import Class
-from django import forms
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
+"""from django import forms
 
-class UserLogin(AuthenticationForm):
-    pass
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'forms-input', 'placeholder': 'Nom d\'utilisateur'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'forms-input', 'placeholder': 'Mot de passe'})
+    )
+"""

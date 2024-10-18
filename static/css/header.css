@@ -81,13 +81,16 @@ body::-webkit-scrollbar {
     text-decoration: none;
     border-radius: 5px;
     font-weight: bolder  ;
+    font-size: 1.3rem;
+
 }
 
 .nav-link:hover {
-    background-color: rgb(181, 139, 5);
+    color: rgb(181, 139, 5);
 }
 
 .nav-link.active{
-    background-color: rgb(255, 193, 7);
+    color: rgb(255, 193, 7);
+
 }
 

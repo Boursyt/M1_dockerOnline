@@ -1,0 +1,26 @@
+.typeContainer{
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 2%;
+}
+
+.DockerForms{
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.texteareaDocker{
+    padding: 1rem;
+}
+
+.texteareaDocker::placeholder{
+    color: white;
+}
+
+.title {
+margin-bottom: 1%;
+}

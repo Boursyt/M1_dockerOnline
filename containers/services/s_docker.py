@@ -33,11 +33,10 @@ class DockerService:
     #on ajoute le container a la base de données (definie dans m_container)
     def addDockerBDD(self,request):
         try:
-            specs = f'{self.ports},{self.command},{self.environment},{self.network},{self.volumes}'
+            specs = f'{self.image},{self.ports},{self.command},{self.environment},{self.network},{self.volumes}'
             getStatus = self.dockerStatus()
             container = Container.objects.create(
                 user=get_user(request),
-                image=self.image,
                 name=self.name,
                 spec=specs,
                 status=getStatus
@@ -127,24 +126,27 @@ class DockerService:
     def list_images(self):
         return client.images.list()
 
-    def run_dockerfile(self,request, dockerfile):
+    def run_dockerfile(self,request, dockerfile,name):
         try:
             if dockerfile is None:
                 raise ValueError("Dockerfile is None")
             # Build the image from the Dockerfile
-            image, _ = client.images.build(fileobj=dockerfile.file, rm=True, tag="my_image:latest")
-            print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
 
-            # Run a container using the built image
-            container = client.containers.run(image=image.tags[0], detach=True)
+            image, _ = client.images.build(fileobj=dockerfile.file, rm=True, tag="my_image:latest")
+            self.name=name
             self.addDockerBDD(request)
+            print(f"Container {image} added to database")
+            print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
+            # Run a container using the built image
+            container = client.containers.run(image=image.tags[0], name=self.name, detach=True)
+
             print(f"Container started with ID: {container.id}")
             return container
         except (errors.BuildError, errors.APIError) as e:
             print(f"Error building or running container: {e}")
             return None
 
-    def run_compose(self,request, compose_data):
+    def run_compose(self,request, compose_data, name):
         try:
             if compose_data is None:
                 raise ValueError("Compose data is None, possibly due to an invalid YAML file.")
@@ -156,9 +158,11 @@ class DockerService:
                 if not image:
                     raise errors.DockerException(f"Missing mandatory 'image' key in service: {service_name}")
                 options = {key: value for key, value in service_data.items() if key != 'image'}
-                container = client.containers.run(image=image, name=service_name, **options)
+                self.name=name
+                container = client.containers.run(image=image, name=name, detach=True, **options)
                 print(f"Container {service_name} created with ID: {container.id}")
                 self.addDockerBDD(request)
+                print(f"Container {service_name} added to database")
             return "Containers created successfully"
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
             return f"Error creating containers: {str(e)}"

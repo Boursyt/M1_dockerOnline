@@ -1,14 +1,15 @@
-
-<body>
 {% include 'header.html' %}
-<main>
-<body>
-<form method="POST" >
-    <h1>Connexion</h1>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Connexion</button>
-</form>
 
+<body >
+    <section class="bodyBG">
+        <form class="card" method="POST" action="{% url 'login' %}">
+            <h1 class="title">Connexion</h1>
+            {% csrf_token %}
+            <div class="forms">
+                <input type="text" id="username" name="username" class="forms-input" placeholder="Nom d'utilisateur" required>
+                <input type="password" id="password" name="password" class="forms-input" placeholder="Mot de passe" required>
+            </div>
+            <button class="boutton" type="submit">Connexion</button>
+        </form>
+    </section>
 </body>
-</main>

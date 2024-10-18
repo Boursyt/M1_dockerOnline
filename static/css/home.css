@@ -127,6 +127,8 @@ header{
     display: flex;
     flex-direction: row;
     margin: 3%;
+    gap: 1.3rem;
+
 }
 .boutton{
     display: flex;
@@ -135,7 +137,6 @@ header{
     width: 12rem;
     justify-content: center;
     align-items: center;
-    margin-right: 1.5rem;
     background: linear-gradient(to right, #FFC107, #FFA000);
     color: white;
     text-decoration: none;

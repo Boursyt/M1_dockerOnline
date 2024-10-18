@@ -1,0 +1,47 @@
+.bodyBG {
+    background-image: url('../images/Docker-Emblem.png');
+    background-size: 17%; /* Pour couvrir toute la section */
+    background-position: center; /* Centre l'image */
+    background-repeat: no-repeat; /* Évite la répétition de l'image */
+    height: 100vh; /* S'étend sur toute la hauteur de la page */
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.3rem;
+    background: rgba(39, 39, 39, 0.1);
+    backdrop-filter: blur(60px);
+    -webkit-backdrop-filter: blur(60px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.3);
+    padding: 3rem;
+
+}
+
+.forms{
+    font-size: medium;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+
+}
+
+.forms-input{
+
+    border: none; /* Suppression des bordures */
+    padding: 0.5rem; /* Ajout de padding */
+    border-radius: 5px; /* Ajout de coins arrondis */
+    margin-bottom: 1rem; /* Ajout d'un espace en bas */
+}
+
+
+.boutton[type="button"], .boutton[type="submit"] {
+    border: none; /* Assurez-vous qu'il n'y a pas de bordure pour les boutons */
+}
