@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'containers',
     'core',
     'user',
-    'admin_customs'
+    'admin_customs',
+    'dns'
 
 ]
 

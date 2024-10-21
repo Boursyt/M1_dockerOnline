@@ -120,6 +120,7 @@ body.dark-mode .texteareaDocker{
 
     background-color: #404040FF;
     padding: 1rem;
+    color: white
 }
 
 body.dark-mode .texteareaDocker::placeholder{
@@ -127,4 +128,48 @@ body.dark-mode .texteareaDocker::placeholder{
 }
 body.light-mode .texteareaDocker::placeholder{
     color: black;
+}
+
+
+
+body.dark-mode .containerTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+body.dark-mode .containerTable th, .containerTable td {
+    border: 0.1rem solid #D5D5D5FF;
+    padding: 1rem;
+    text-align: left;
+}
+body.dark-mode .containerTable td, .containerTable td {
+    border: 0.1rem solid #D5D5D5FF;
+
+}
+
+body.dark-mode .containerTable th {
+    background-color: #404040FF;
+
+}
+body.dark-mode .containerTable td {
+    background-color: #2e2e2e;
+
+}
+
+body.light-mode .containerTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+body.light-mode .containerTable th, .containerTable td {
+    border: 0.1rem solid #404040FF;
+    padding: 1rem;
+    text-align: left;
+}
+
+body.light-mode .containerTable th {
+    background-color: #D5D5D5FF;
+}
+body.light-mode .containerTable td {
+    background-color: #ebebeb;
 }

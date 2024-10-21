@@ -1,6 +1,6 @@
 from lib2to3.fixes.fix_input import context
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from containers.services.s_docker import DockerService
 from django.http import JsonResponse
 import yaml
@@ -16,7 +16,7 @@ def start_container(request):
         }
         return render(request, 'start.html', context)
     else:
-        return render(request, 'home.html')
+        return redirect('/home')
 
 
 
@@ -53,7 +53,7 @@ def bouton_start(request):
             filtered_fields = {k: v for k, v in fields.items() if v}
             docker_service = DockerService(name, image, **filtered_fields)
             docker_create = docker_service.docker_create(request)
-            container = docker_service.docker_run()
+            container = docker_service.docker_run(name)
 
             # On renvoie le conteneur ou l'erreur sous forme de JSON
             return JsonResponse({'container': str(container)})

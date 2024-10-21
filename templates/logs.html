@@ -1,0 +1,26 @@
+{% include 'header.html' %}
+<body>
+<div class="typeContainer">
+    <h1 class="title">logs pour {{name}} </h1>
+    <h2 style="margin-bottom: 1%">Erreur docker</h2>
+    {% if dockerError.error_message %}
+        <div class="card2">
+            <a>State: {{ dockerError.state }}<br></a>
+            <a>Exit Code: {{ dockerError.exit_code }}<br></a>
+            <a>Message d'érreurs: {{ dockerError.error_message }}</a>
+        </div>
+    {% else %}
+        <p class="card2"> pas d'erreurs pour l'instant</p>
+    {% endif %}
+
+    <h2 style="margin-bottom: 1%; margin-top:1%">Logs container</h2>
+
+    {% if logs %}
+        <p class="card2">
+            {{logs}}
+        </p>
+    {% else %}
+        <p class="card2"> pas de log pour l'instant</p>
+    {% endif %}
+
+</div>

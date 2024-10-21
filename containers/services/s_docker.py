@@ -8,9 +8,15 @@ from containers.models import Container
 
 # variable global
 #client = docker.from_env()
+
 client = docker.DockerClient(base_url='tcp://192.168.1.39:2375', tls=False)
+
 class DockerService:
+    """
+    Class pour la logique metier lieer a la manipulation de Docker
+    """
     def __init__(self, name=None, image=None, command=None, environment=None, ports=None, volumes=None, network=None):
+
         self.name = name
         self.image = image
         self.command = command
@@ -21,6 +27,7 @@ class DockerService:
 
 
     def dockerStatus(self):
+
         try:
             container = client.containers.get(self.name)
             return container.status
@@ -30,8 +37,8 @@ class DockerService:
             print(f"Error getting container status: {e}")
             return 'Error'
 
-    #on ajoute le container a la base de données (definie dans m_container)
     def addDockerBDD(self,request):
+
         try:
             specs = f'{self.image},{self.ports},{self.command},{self.environment},{self.network},{self.volumes}'
             getStatus = self.dockerStatus()
@@ -45,15 +52,9 @@ class DockerService:
         except Exception as e:
             print(f"Error adding container to database: {e}")
 
-    def removeDockerBDD(self):
+    def removeDockerBDD(self,name):
         try:
-            # Trouver le conteneur en fonction du nom (ou un autre critère, selon tes besoins)
-            container = Container.objects.get(name=self.name)
-
-            # Ici, on peut aussi gérer la logique Docker si tu veux arrêter ou supprimer le conteneur Docker côté Docker Engine
-            self.docker_stop()
-
-            # Supprimer l'objet de la base de données
+            container = Container.objects.get(name=name)
             container.delete()
 
             print(f"Le conteneur '{self.name}' a été supprimé de la base de données.")
@@ -89,8 +90,8 @@ class DockerService:
             print(f"Error creating container: {e}")
             return None
 
-    def docker_run(self):
-        container= client.containers.get(self.name)
+    def docker_run(self,name):
+        container= client.containers.get(name)
         if container:
             try:
                 container.start()
@@ -100,8 +101,8 @@ class DockerService:
                 return None
         return None
 
-    def docker_stop(self):
-        container = client.containers.get(self.name)
+    def docker_stop(self,name):
+        container = client.containers.get(name)
         if container:
             try:
                 container.stop()
@@ -109,19 +110,38 @@ class DockerService:
             except errors.APIError as e:
                 print(f"Error stopping container: {e}")
                 return None
-    def docker_remove(self):
-        container = client.containers.get(self.name)
-        if container:
-            try:
+
+    def docker_remove(self, name):
+        try:
+            container = client.containers.get(name)
+            if container:
                 container.remove()
-                self.removeDockerBDD()
+                self.removeDockerBDD(name)
                 return container
-            except errors.APIError as e:
-                print(f"Error removing container: {e}")
-                return None
+        except errors.NotFound:
+            print(f"Container '{name}' not found.")
+        except errors.APIError as e:
+            print(f"Error removing container: {e}")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+        return None
 
     def docker_list(self):
         return client.containers.list(all=True)
+
+
+    def docker_list_user(self, request):
+        userLogin = get_user(request)
+        user_containers = []
+        for container in client.containers.list(all=True):
+            if container.name.startswith(f'{userLogin}'):
+                user_containers.append({
+                    "id": container.id,
+                    "name": container.name,
+                    "status": container.status,
+                    "image": container.image.tags[0] if container.image.tags else "No tag"
+                })
+        return user_containers
 
     def list_images(self):
         return client.images.list()
@@ -130,14 +150,12 @@ class DockerService:
         try:
             if dockerfile is None:
                 raise ValueError("Dockerfile is None")
-            # Build the image from the Dockerfile
 
             image, _ = client.images.build(fileobj=dockerfile.file, rm=True, tag="my_image:latest")
             self.name=name
             self.addDockerBDD(request)
             print(f"Container {image} added to database")
             print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
-            # Run a container using the built image
             container = client.containers.run(image=image.tags[0], name=self.name, detach=True)
 
             print(f"Container started with ID: {container.id}")
@@ -167,8 +185,8 @@ class DockerService:
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
             return f"Error creating containers: {str(e)}"
 
-    def get_logs(self):
-        container = client.containers.get(self.name)
+    def get_logs(self,name):
+        container = client.containers.get(name)
         if container:
             try:
                 logs = container.logs()
@@ -177,9 +195,27 @@ class DockerService:
                 print(f"Error getting logs: {e}")
                 return None
         return None
-    def __str__(self):
-        return 'DockerService(name={}, image={}, command={}, environment={}, ports={}, volumes={}, network={})'.format(
-            self.name, self.image, self.command, self.environment, self.ports, self.volumes, self.network)
 
-    def __repr__(self):
-        return self.__str__()
+    def get_Docker_error(self, name):
+        try:
+            container = client.containers.get(name)
+            if container:
+                error_info = client.api.inspect_container(name)
+                state = error_info['State']
+                exit_code = state['ExitCode']
+                error_message = state.get('Error', '')
+
+                return {
+                    'state': state,
+                    'exit_code': exit_code,
+                    'error_message': error_message
+                }
+        except docker.errors.NotFound:
+            print(f"Container '{name}' not found.")
+        except docker.errors.APIError as e:
+            print(f"API Error getting logs for '{name}': {e}")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+
+        return None
+

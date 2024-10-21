@@ -33,6 +33,12 @@
     </label>
     <ul class="nav nav-pills">
         {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a href="" class="nav-link">admin</a>
+                </li>
+            {% endif %}
+
             <li class="nav-item">
                 <a href="{% url 'logout' %}" class="nav-link">Log out</a>
             </li>

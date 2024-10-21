@@ -2,7 +2,7 @@
 {% load static %}
 <main>
     <body>
-        <div class="typeContainer">
+        <div class="typeContainer card2">
             <h1 class="title">Lancer un docker en choissisant les options</h1>
         
             <form class="DockerForms" method="POST" action="{% url 'bouton_start' %}">
@@ -20,7 +20,7 @@
         
         </div>
         
-        <div class="typeContainer">
+        <div class="typeContainer card2">
             <h1 class="title">Lancer un docker à partir d'un dockerfile</h1>
             <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'dockerfile' %}" id="dockerUploadForm">
                 {% csrf_token %}
@@ -34,7 +34,7 @@
             </form>
         </div>
         
-        <div class="typeContainer">
+        <div class="typeContainer card2 ">
             <h1 class="title">Lancer un docker à partir d'un compose.yml</h1>
             <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'compose' %}" id="composeUploadForm">
                 {% csrf_token %}

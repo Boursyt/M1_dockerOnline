@@ -1,0 +1,28 @@
+
+.delete{
+    border: none;
+    margin: 0;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    background-color: darkred;
+    border-radius: 10%;
+    color: white;
+    font-weight: bold;
+}
+.go{
+    border: none;
+    margin: 0;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    background-color: darkolivegreen;
+    border-radius: 10%;
+    color: white;
+    font-weight: bold;
+}
+.formtab{
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

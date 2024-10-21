@@ -1,20 +1,68 @@
-
-<body>
 {% include 'header.html' %}
-<main>
-    <form method="POST" action="{% url 'bouton_list' %}">
-        {% csrf_token %}
-        <button type="submit">list</button>
-    </form>
-    
-    {% if containers %}
-        <h2>Containers:</h2>
-        <ul>
-            {% for container in containers %}
-                <li>{{ container }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+<body>
+<div class="typeContainer">
+    <h1 class="title">Vos conteneurs:</h1>
 
-</main></body>
-</html>
+    {% if containers %}
+        <table class="containerTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Image</th>
+                <th>demarrer</th>
+                <th>Stopper</th>
+                <th>supprimer</th>
+                <th>acceder</th>
+                <th>logs</th>
+
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for container in containers %}
+                <tr>
+                    <td>{{ container.id }}</td>
+                    <td>{{ container.name }}</td>
+                    <td>{{ container.status }}</td>
+                    <td>{{ container.image }}</td>
+                    <td>
+                        <form class="formtab" method="POST" action="{% url 'run_container' container.name%}">
+                            {% csrf_token %}
+                            <button class="go" type="submit">start</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="formtab" method="POST" action="{% url 'stop_container' container.name%}">
+                            {% csrf_token %}
+                            <button class="delete" type="submit">stop</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="formtab" method="POST" action="{% url 'supprimer_container' container.name %}">
+                            {% csrf_token %}
+                            <button class="delete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                    <td >
+                        <form class="formtab" method="POST" action="">
+                            {% csrf_token %}
+                            <button class="go" type="submit">acceder</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="formtab" method="POST" action="{% url 'logs_container' container.name%}">
+                            {% csrf_token %}
+                            <button class="go" type="submit">logs</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No containers found.</p>
+    {% endif %}
+</div>
+</body>
