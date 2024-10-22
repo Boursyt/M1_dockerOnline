@@ -9,7 +9,7 @@ from containers.models import Container
 # variable global
 #client = docker.from_env()
 
-client = docker.DockerClient(base_url='tcp://192.168.1.39:2375', tls=False)
+client = docker.DockerClient(base_url='tcp://86.208.125.226:2375', tls=False)
 
 class DockerService:
     """
