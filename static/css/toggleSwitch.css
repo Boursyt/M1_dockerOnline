@@ -96,11 +96,15 @@ body.light-mode .title{
 
 body.dark-mode .forms-input{
     background-color: #404040;
+    color: white;
+
 
 }
 
 body.light-mode .forms-input{
     background-color: #d5d5d5;
+    color: black;
+
 
 }
 
@@ -120,7 +124,7 @@ body.dark-mode .texteareaDocker{
 
     background-color: #404040FF;
     padding: 1rem;
-    color: white
+    color: white !important;
 }
 
 body.dark-mode .texteareaDocker::placeholder{

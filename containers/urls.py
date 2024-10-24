@@ -8,7 +8,7 @@ urlpatterns = [
 
     path('', v_container.start_container, name='homepage de container'),
     path('creat/', v_container.start_container, name='start_container'),
-    path('start-container/', v_container.bouton_start, name='bouton_start'),
+    path('container/', v_container.container, name='container'),
     path('dockerfile/', v_container.dockerfile, name='dockerfile'),
     path('compose/', v_container.compose, name='compose'),
 

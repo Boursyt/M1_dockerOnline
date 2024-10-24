@@ -12,5 +12,5 @@ pip install -r requirements.txt
 - Django, un framework web pour Python
 - Module API Docker SDK pour Python
 - Base de données SQLite
-- Serveur Docker externe (Fedora 40 dans un Proxmox), localhost uniquement (à remplacer par un vrai serveur au moment de la mise en production de l'application)
+- Proxmox pour faire tourner les différents services (Docker, reverse proxy (nginx), serveur web (django))
 - HTML/CSS/Js avec templates Django pour l'interface utilisateur.

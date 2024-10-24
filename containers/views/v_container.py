@@ -1,7 +1,7 @@
 from lib2to3.fixes.fix_input import context
-
 from django.shortcuts import render, redirect
 from containers.services.s_docker import DockerService
+
 from django.http import JsonResponse
 import yaml
 # #bouton qui utilise la fonction docker_run de la class DockerService
@@ -20,7 +20,7 @@ def start_container(request):
 
 
 
-def bouton_start(request):
+def container(request):
     if request.method == 'POST':
 
         try:
@@ -32,12 +32,14 @@ def bouton_start(request):
             ports_hote = request.POST.get('ports_hote')
             ports_rediriger = request.POST.get('ports_rediriger')
             volume = request.POST.get('volume')
-            network = request.POST.get('network')
-            user = request.user
-            name = f'{user}_{name}'
+            network = 'traefik-net'
+            user = (request.user)
+            name=name.lower()
+            name=(f'{user}-{name}')
             if volume:
                 volume = {volume: {'bind': f'/volume/{user}/', 'mode': 'rw'}}
             ports = {ports_hote: ports_rediriger}
+
             if network:
                 network = network
 
@@ -56,7 +58,7 @@ def bouton_start(request):
             container = docker_service.docker_run(name)
 
             # On renvoie le conteneur ou l'erreur sous forme de JSON
-            return JsonResponse({'container': str(container)})
+            return redirect('/container/liste/')
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -71,7 +73,8 @@ def dockerfile(request):
         try:
             name = request.POST.get('name')
             user = request.user
-            name=f'{user}_{name}'
+            name=name.lower()
+            name=(f'{user}-{name}')
             print(dockerfile.read().decode('utf-8'))
             dockerfile.seek(0)
             if dockerfile is None:
@@ -94,8 +97,9 @@ def compose(request):
             user = request.user
             name = request.POST.get('name')
             user = request.user
-            name=f'{user}_{name}'
-        # Lire le contenu du fichier YAML
+            name=name.lower()
+            name=f'{user}-{name}'
+            # Lire le contenu du fichier YAML
             compose_data = yaml.safe_load(composefile.read())
             # Vérifier si compose_data est None
             if compose_data is None:
@@ -107,5 +111,4 @@ def compose(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
 

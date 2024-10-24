@@ -5,7 +5,7 @@
         <div class="typeContainer card2">
             <h1 class="title">Lancer un docker en choissisant les options</h1>
         
-            <form class="DockerForms" method="POST" action="{% url 'bouton_start' %}">
+            <form class="DockerForms" method="POST" action="{% url 'container' %}">
                 {% csrf_token %}
                 <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
                 <textarea class="texteareaDocker" name="image" placeholder="url de l'image" required></textarea>
@@ -26,7 +26,7 @@
                 {% csrf_token %}
                 <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
                 <div id="dockerDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
-                    <p>Drag & drop your Dockerfile here or click to upload</p>
+                    <p>Drag & drop votre fichier dockerfile ici ou cliquer pour le selectionner</p>
                     <input type="file" name="dockerfile" id="dockerFileInput" style="display: none;">
                 </div>
                 <p id="dockerFileName" style="margin-top: 10px; color: #666;"></p>
@@ -40,7 +40,7 @@
                 {% csrf_token %}
                 <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
                 <div id="composeDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
-                    <p>Drag & drop your compose.yml here or click to upload</p>
+                    <p>Drag & drop votre fichier compose.yml ici ou cliquer pour le selectionner</p>
                     <input type="file" name="composefile" id="composeFileInput" style="display: none;">
                 </div>
                 <p id="composeFileName" style="margin-top: 10px; color: #666;"></p>

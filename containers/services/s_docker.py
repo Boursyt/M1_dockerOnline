@@ -3,13 +3,20 @@ from django.contrib.auth import get_user
 from docker import errors
 from django.core.exceptions import ObjectDoesNotExist
 import yaml
-from urllib3 import request
 from containers.models import Container
+import os
+from dns.service.s_ovh import adddns
+
 
 # variable global
 #client = docker.from_env()
+from dotenv import load_dotenv
+load_dotenv()
 
-client = docker.DockerClient(base_url='tcp://86.208.125.226:2375', tls=False)
+host = os.getenv('DOCKER_HOSTS')
+TLS_veriy=os.getenv('DOCKER_TLS_VERIFY')
+client = docker.DockerClient(base_url=host, tls=None)
+
 
 class DockerService:
     """
@@ -24,6 +31,22 @@ class DockerService:
         self.ports = ports
         self.volumes = volumes
         self.network = network
+
+    def traefikRoute(self, name):
+        labels = {
+            "traefik.enable": "true",
+            f"traefik.http.routers.{name}.rule": f"Host(`{name}.dockeronline.ovh`)",
+            f"traefik.http.routers.{name}.entrypoints": "web",
+            f"traefik.http.services.{name}.loadbalancer.server.port": "8084",
+
+            # Middleware pour redirection de port
+            f"traefik.http.middlewares.{name}-redirect-to-port.redirectscheme.scheme": "http",
+            f"traefik.http.middlewares.{name}-redirect-to-port.redirectscheme.port": "8084",
+            f"traefik.http.routers.{name}.middlewares": f"{name}-redirect-to-port@docker"
+        }
+        return labels
+
+
 
 
     def dockerStatus(self):
@@ -74,6 +97,7 @@ class DockerService:
 
     def docker_create(self,request):
         self.image = self.download_image(self.image)
+
         try:
             container = client.containers.create(
                 name=self.name,
@@ -82,9 +106,11 @@ class DockerService:
                 environment=self.environment,
                 ports=self.ports,
                 volumes=self.volumes,
-                network=self.network
+                network=self.network,
+                labels=self.traefikRoute(self.name)
             )
             self.addDockerBDD(request)
+            dns=adddns(self.name)
             return container
         except errors.APIError as e:
             print(f"Error creating container: {e}")
@@ -153,11 +179,11 @@ class DockerService:
 
             image, _ = client.images.build(fileobj=dockerfile.file, rm=True, tag="my_image:latest")
             self.name=name
+            print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
+            container = client.containers.run(image=image.tags[0], name=self.name, detach=True, labels=self.traefikRoute(self.name))
             self.addDockerBDD(request)
             print(f"Container {image} added to database")
-            print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
-            container = client.containers.run(image=image.tags[0], name=self.name, detach=True)
-
+            dns=adddns(self.name)
             print(f"Container started with ID: {container.id}")
             return container
         except (errors.BuildError, errors.APIError) as e:
@@ -165,6 +191,7 @@ class DockerService:
             return None
 
     def run_compose(self,request, compose_data, name):
+
         try:
             if compose_data is None:
                 raise ValueError("Compose data is None, possibly due to an invalid YAML file.")
@@ -177,9 +204,10 @@ class DockerService:
                     raise errors.DockerException(f"Missing mandatory 'image' key in service: {service_name}")
                 options = {key: value for key, value in service_data.items() if key != 'image'}
                 self.name=name
-                container = client.containers.run(image=image, name=name, detach=True, **options)
+                container = client.containers.run(image=image, name=name,labels=self.traefikRoute(self.name), detach=True, **options)
                 print(f"Container {service_name} created with ID: {container.id}")
                 self.addDockerBDD(request)
+                dns=adddns(self.name)
                 print(f"Container {service_name} added to database")
             return "Containers created successfully"
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
