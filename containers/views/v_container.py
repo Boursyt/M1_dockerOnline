@@ -28,11 +28,9 @@ def container(request):
             name = request.POST.get('name')
             image = request.POST.get('image')
             command = request.POST.get('command')
-            environment = request.POST.get('env')
             ports_hote = request.POST.get('ports_hote')
-            ports_rediriger = request.POST.get('ports_rediriger')
+            ports_rediriger = DockerService().counter()
             volume = request.POST.get('volume')
-            network = 'traefik-net'
             user = (request.user)
             name=name.lower()
             name=(f'{user}-{name}')
@@ -40,16 +38,12 @@ def container(request):
                 volume = {volume: {'bind': f'/volume/{user}/', 'mode': 'rw'}}
             ports = {ports_hote: ports_rediriger}
 
-            if network:
-                network = network
 
             #on crée un dictionnaire avec les info du formulaire
             fields = {
                 'command': command,
-                'environment': environment,
                 'ports': ports,
                 'volumes': volume,
-                'network': network
             }
             # Filter out empty fields
             filtered_fields = {k: v for k, v in fields.items() if v}

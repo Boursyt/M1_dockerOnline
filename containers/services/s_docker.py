@@ -5,14 +5,11 @@ from django.core.exceptions import ObjectDoesNotExist
 import yaml
 from containers.models import Container
 import os
-from dns.service.s_ovh import adddns
-
-
-# variable global
-#client = docker.from_env()
+from dns.service.s_ovh import adddns, rmdns
+from io import BytesIO
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 host = os.getenv('DOCKER_HOSTS')
 TLS_veriy=os.getenv('DOCKER_TLS_VERIFY')
 client = docker.DockerClient(base_url=host, tls=None)
@@ -31,26 +28,31 @@ class DockerService:
         self.ports = ports
         self.volumes = volumes
         self.network = network
+        if os.path.exists("./counter.txt"):
+            with open("./counter.txt", "r") as file:
+                self.count = int(file.read())
+        else:
+            self.count = 8000
+            with open("./counter.txt", "w") as file:
+                file.write(str(self.count))
 
     def traefikRoute(self, name):
         labels = {
             "traefik.enable": "true",
             f"traefik.http.routers.{name}.rule": f"Host(`{name}.dockeronline.ovh`)",
             f"traefik.http.routers.{name}.entrypoints": "web",
-            f"traefik.http.services.{name}.loadbalancer.server.port": "8084",
-
-            # Middleware pour redirection de port
-            f"traefik.http.middlewares.{name}-redirect-to-port.redirectscheme.scheme": "http",
-            f"traefik.http.middlewares.{name}-redirect-to-port.redirectscheme.port": "8084",
-            f"traefik.http.routers.{name}.middlewares": f"{name}-redirect-to-port@docker"
+            f"traefik.http.services.{name}.loadbalancer.server.port": "80",
+            f"traefik.docker.network": "traefik-net"
         }
         return labels
 
-
-
+    def counter(self):
+        self.count += 1
+        with open("counter.txt", "w") as file: # "w" donc ecrasement de la valeur
+            file.write(str(self.count))
+        return self.count
 
     def dockerStatus(self):
-
         try:
             container = client.containers.get(self.name)
             return container.status
@@ -61,9 +63,8 @@ class DockerService:
             return 'Error'
 
     def addDockerBDD(self,request):
-
         try:
-            specs = f'{self.image},{self.ports},{self.command},{self.environment},{self.network},{self.volumes}'
+            specs = f'{self.image},{self.ports},{self.command},{self.environment},{self.network },{self.volumes}'
             getStatus = self.dockerStatus()
             container = Container.objects.create(
                 user=get_user(request),
@@ -79,7 +80,6 @@ class DockerService:
         try:
             container = Container.objects.get(name=name)
             container.delete()
-
             print(f"Le conteneur '{self.name}' a été supprimé de la base de données.")
         except ObjectDoesNotExist:
             print(f"Le conteneur '{self.name}' n'existe pas dans la base de données.")
@@ -103,10 +103,9 @@ class DockerService:
                 name=self.name,
                 image=self.image,
                 command=self.command,
-                environment=self.environment,
                 ports=self.ports,
                 volumes=self.volumes,
-                network=self.network,
+                network='traefik-net',
                 labels=self.traefikRoute(self.name)
             )
             self.addDockerBDD(request)
@@ -143,6 +142,7 @@ class DockerService:
             if container:
                 container.remove()
                 self.removeDockerBDD(name)
+                rmdns(name)
                 return container
         except errors.NotFound:
             print(f"Container '{name}' not found.")
@@ -170,25 +170,57 @@ class DockerService:
         return user_containers
 
     def list_images(self):
+
         return client.images.list()
 
-    def run_dockerfile(self,request, dockerfile,name):
+
+    def getPortExposed(self, dockerfile):
+        dockerfile_content = dockerfile.read().decode("utf-8")
+        dockerfile.seek(0)
+        for line in dockerfile_content.splitlines():
+            if line.startswith("EXPOSE"):
+                parts = line.split()
+                if len(parts) > 1:
+                    return parts[1]  # Renvoie le port exposé
+        raise ValueError("No EXPOSE directive found in Dockerfile")
+
+    def run_dockerfile(self, request, dockerfile, name):
         try:
             if dockerfile is None:
                 raise ValueError("Dockerfile is None")
 
-            image, _ = client.images.build(fileobj=dockerfile.file, rm=True, tag="my_image:latest")
-            self.name=name
+            expose = self.getPortExposed(dockerfile)
+            redirect_port = self.counter()
+            port = {str(expose): redirect_port}
+            image, _ = client.images.build(fileobj=BytesIO(dockerfile.read()), rm=True, tag="my_image:latest")
+            self.name = name
             print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
-            container = client.containers.run(image=image.tags[0], name=self.name, detach=True, labels=self.traefikRoute(self.name))
+            container = client.containers.run(
+                image=image.tags[0],
+                name=self.name,
+                detach=True,
+                ports=port,
+                network='traefik-net',
+                labels=self.traefikRoute(self.name)
+            )
+
             self.addDockerBDD(request)
             print(f"Container {image} added to database")
-            dns=adddns(self.name)
+
+            dns = adddns(self.name)
             print(f"Container started with ID: {container.id}")
             return container
+
         except (errors.BuildError, errors.APIError) as e:
             print(f"Error building or running container: {e}")
             return None
+
+    def getPortCompose(self, ports):
+        if not ports:
+            pass
+        container_ports = [int(port.split(':')[1]) for port in ports]
+        return container_ports  # Retourne une liste des ports de conteneur
+
 
     def run_compose(self,request, compose_data, name):
 
@@ -198,18 +230,38 @@ class DockerService:
             services = compose_data.get('services', {})
             if not services:
                 raise ValueError("No services found in compose data")
+
             for service_name, service_data in services.items():
                 image = service_data.get('image')
                 if not image:
                     raise errors.DockerException(f"Missing mandatory 'image' key in service: {service_name}")
-                options = {key: value for key, value in service_data.items() if key != 'image'}
-                self.name=name
-                container = client.containers.run(image=image, name=name,labels=self.traefikRoute(self.name), detach=True, **options)
+
+                options = {key: value for key, value in service_data.items() if key not in ['image','ports','restart','depends_on']}
+                container_name = f"{name}-{service_name}"
+                self.name=container_name
+
+                ports = service_data.get('ports', [])
+                container_ports = self.getPortCompose(ports)
+                port_mappings = {}
+                for container_port in container_ports:
+                    redirect_port = self.counter()  # Port redirigé sur l'hôte
+                    port_mappings[str(container_port)] = redirect_port
+
+                container = client.containers.run(
+                    image=image,
+                    name=container_name,
+                    labels=self.traefikRoute(self.name),
+                    ports=port_mappings,
+                    detach=True,
+                    network='traefik-net',
+                    **options)
+
                 print(f"Container {service_name} created with ID: {container.id}")
                 self.addDockerBDD(request)
                 dns=adddns(self.name)
                 print(f"Container {service_name} added to database")
             return "Containers created successfully"
+
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
             return f"Error creating containers: {str(e)}"
 
