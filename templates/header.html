@@ -35,7 +35,7 @@
         {% if user.is_authenticated %}
             {% if user.is_superuser %}
                 <li class="nav-item">
-                    <a href="" class="nav-link">admin</a>
+                    <a href="{% url 'home_admin' %}" class="nav-link {% if menu.page == 'home_admin'%}active{% endif %}" aria-current="page">admin</a>
                 </li>
             {% endif %}
 

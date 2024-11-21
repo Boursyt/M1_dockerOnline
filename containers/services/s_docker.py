@@ -8,11 +8,28 @@ import os
 from dns.service.s_ovh import adddns, rmdns
 from io import BytesIO
 from dotenv import load_dotenv
-
+'''
 load_dotenv()
 host = os.getenv('DOCKER_HOSTS')
 TLS_veriy=os.getenv('DOCKER_TLS_VERIFY')
-client = docker.DockerClient(base_url=host, tls=None)
+client = docker.DockerClient(base_url=host, tls=True)'''
+# Charger les variables d'environnement depuis .env
+load_dotenv()
+
+# Charger les paramètres Docker depuis les variables d'environnement
+host = os.getenv('DOCKER_HOSTS')
+tls_verify = os.getenv('DOCKER_TLS_VERIFY') == 'True'
+cert_path = os.getenv('DOCKER_CERT_PATH')
+
+# Configuration du TLS
+tls_config = docker.tls.TLSConfig(
+    client_cert=(f"{cert_path}/client-cert.pem", f"{cert_path}/client-key.pem"),
+    ca_cert=f"{cert_path}/ca.pem",
+    verify=tls_verify
+)
+
+# Initialiser le client Docker avec TLS
+client = docker.DockerClient(base_url=host, tls=tls_config)
 
 
 class DockerService:

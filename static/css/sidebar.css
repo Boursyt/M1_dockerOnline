@@ -1,0 +1,78 @@
+.navebar{
+    width: 15%; /* Occupe 20% de la largeur de la page */
+    height: 97%; /* Prend toute la hauteur de la page */
+    background-color: rgb(19, 60, 85); /* Couleur de fond */
+    position: fixed; /* Fixe la barre sur la gauche */
+    margin-left: 1%;
+    flex-direction: column;
+    border-radius: 1.3rem;
+    backdrop-filter: blur(60px);
+    -webkit-backdrop-filter: blur(60px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between; /* Espace entre les sections "top" et "bottom" */
+}
+
+
+.sidenav a {
+    text-decoration: none; /* Retire la décoration (soulignement) */
+    color: white; /* Utilise la couleur du parent */
+    display: block; /* Transforme les liens en éléments de type bloc */
+    padding: 5%; /* Ajoute un espace autour des liens pour une meilleure lisibilité */
+    font-weight: bold ;
+
+}
+
+.sidenav a:hover {
+    background-color: rgb(181, 139, 5); /* Ajoute une couleur de fond au survol */
+    color: #FFF;
+    border-radius: 1vh;
+}
+
+.link{
+    margin: 1%;
+}
+
+.link.active{
+    background-color: rgb(255, 193, 7); /* Ajoute une couleur de fond au survol */
+    color: #000;
+    border-radius: 1vh;
+}
+.bottom{
+    display: flex;
+    margin: 2%;
+    padding: 5%;
+    flex-wrap: wrap;
+    margin-top: 45vh
+
+}
+
+.bottom .switch{
+    margin-bottom: 1vh;
+}
+.top{
+    display: flex;
+    flex-direction: column;
+    margin: 1%;
+    font-size: 100%;
+}
+.boutton2{
+    display: flex;
+    flex-direction: row;
+    padding: 1rem 1.5rem;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #FFC107, #FFA000);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bolder  ;
+    font-size: 1.1rem;
+}
+#main{
+    margin: 1%;
+}
+

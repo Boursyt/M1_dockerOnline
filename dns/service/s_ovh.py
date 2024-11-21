@@ -18,7 +18,7 @@ def adddns(containername):
         result = client.post(f'/domain/zone/{domain}/record',
                              fieldType='A',
                              subDomain=containername,
-                             target='86.208.125.226')
+                             target='46.105.52.17')
 
         client.post(f'/domain/zone/{domain}/refresh')
         return result

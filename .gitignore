@@ -1,1 +1,8 @@
-/.env
+# Created by venv; see https://docs.python.org/3/library/venv.html
+.env
+.venv
+.gitignore
+/.python-version
+/pyvenv.cfg
+/lib64/
+

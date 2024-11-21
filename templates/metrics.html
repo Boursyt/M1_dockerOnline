@@ -1,0 +1,72 @@
+{% include 'sidebar.html' %}
+{% load static %}
+<div id="main" style="margin-left: 20%;">
+    <!-- Zone d'affichage JSON brut -->
+    <pre id="json-display">{{ cpu|safe }}</pre>
+    <pre id="json-display">{{ RAM|safe }}</pre>
+    <pre id="json-display">{{ DISK|safe }}</pre>
+
+
+
+    <div class="flex-wrapper">
+        <div class="single-chart">
+            <h2 class="title">CPU</h2>
+            <svg viewBox="0 0 36 36" class="circular-chart orange">
+                <path class="circle-bg"
+                      d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path id="cpu-circle" class="circle"
+                      stroke-dasharray="0, 100"
+                      d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <text id="cpu-percent" x="18" y="20.35" class="percentage"></text>
+            </svg>
+            <script src="{% static 'js/metricsCPU.js' %}"></script>
+        </div>
+
+
+        <div  class="single-chart">
+            <h2 class="title">RAM</h2>
+            <svg viewBox="0 0 36 36"  class="circular-chart green">
+                <path class="circle-bg"
+                      d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path id="ram-circle" class="circle"
+                      stroke-dasharray="0, 100"
+                      d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <text id="ram-percent" x="18" y="20.35" class="percentage"></text>
+            </svg>
+            <script src="{% static 'js/metricsRAM.js' %}"></script>
+        </div>
+
+
+        <div class="single-chart">
+            <h2 class="title">Disk</h2>
+            <svg viewBox="0 0 36 36" class="circular-chart blue">
+                <path class="circle-bg"
+                      d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path id="disk-circle" class="circle"
+                      stroke-dasharray="0, 100"
+                      d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <text id="disk-percent" x="18" y="20.35" class="percentage"></text>
+            </svg>
+            <script src="{% static 'js/metricsDISK.js' %}"></script>
+        </div>
+    </div>
+
+</div>
