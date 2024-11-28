@@ -10,7 +10,7 @@ pip install -r requirements.txt
 ## Technologies utilisées
 
 - Django, un framework web pour Python
-- Module API Docker SDK pour Python
+- Module API Docker SDK pour Python, API OVH, API prometheuse
 - Base de données SQLite
-- Proxmox pour faire tourner les différents services (Docker, reverse proxy (nginx), serveur web (django))
-- HTML/CSS/Js avec templates Django pour l'interface utilisateur.
+- Proxmox pour faire tourner les différents services (Docker, reverse proxy (traefik), serveur web (django))
+- HTML/CSS/Js pour l'interface utilisateur.
