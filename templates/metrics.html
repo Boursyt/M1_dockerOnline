@@ -1,13 +1,6 @@
 {% include 'sidebar.html' %}
 {% load static %}
 <div id="main" style="margin-left: 20%;">
-    <!-- Zone d'affichage JSON brut -->
-    <pre id="json-display">{{ cpu|safe }}</pre>
-    <pre id="json-display">{{ RAM|safe }}</pre>
-    <pre id="json-display">{{ DISK|safe }}</pre>
-
-
-
     <div class="flex-wrapper">
         <div class="single-chart">
             <h2 class="title">CPU</h2>

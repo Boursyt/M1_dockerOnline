@@ -3,6 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 class CustomUserCreationForm(UserCreationForm):
+    """
+    Class qui cree un formulaire d'inscription personnaliser pour un utilisateur.
+    baser sur le formulaire de creation d'utilisateur de Django.
+    """
     first_name = forms.CharField(max_length=30, required=True)
     last_name = forms.CharField(max_length=30, required=True)
     email = forms.EmailField(max_length=254, required=True)
