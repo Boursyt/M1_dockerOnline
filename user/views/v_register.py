@@ -3,6 +3,11 @@ from django.contrib.auth import login
 from ..forms.f_register import CustomUserCreationForm
 from ..services.s_auth import authentification
 def registerForm(request):
+    """
+    Fonction d'inscription de l'utilisateur. Formulaire d'inscription personnalisé
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():

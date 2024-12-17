@@ -8,11 +8,7 @@ import os
 from dns.service.s_ovh import adddns, rmdns
 from io import BytesIO
 from dotenv import load_dotenv
-'''
-load_dotenv()
-host = os.getenv('DOCKER_HOSTS')
-TLS_veriy=os.getenv('DOCKER_TLS_VERIFY')
-client = docker.DockerClient(base_url=host, tls=True)'''
+
 # Charger les variables d'environnement depuis .env
 load_dotenv()
 
@@ -34,7 +30,7 @@ client = docker.DockerClient(base_url=host, tls=tls_config)
 
 class DockerService:
     """
-    Class pour la logique metier lieer a la manipulation de Docker
+    Class pour la logique metier lieer a la manipulation de Docker.
     """
     def __init__(self, name=None, image=None, command=None, environment=None, ports=None, volumes=None, network=None):
 
@@ -54,6 +50,11 @@ class DockerService:
                 file.write(str(self.count))
 
     def traefikRoute(self, name):
+        """
+        Fonction pour definir les labels pour Traefik.
+        :param name: nom de type username-container
+        :return: labels
+        """
         labels = {
             "traefik.enable": "true",
             f"traefik.http.routers.{name}.rule": f"Host(`{name}.dockeronline.ovh`)",
@@ -64,12 +65,20 @@ class DockerService:
         return labels
 
     def counter(self):
+        """
+        Fonction pour incrementer le compteur de port. Ecrait dans un fichier
+        :return: le compteur
+        """
         self.count += 1
         with open("counter.txt", "w") as file: # "w" donc ecrasement de la valeur
             file.write(str(self.count))
         return self.count
 
     def dockerStatus(self):
+        """
+        Fonction pour obtenir le status d'un conteneur.
+        :return: errors, status
+        """
         try:
             container = client.containers.get(self.name)
             return container.status
@@ -80,6 +89,11 @@ class DockerService:
             return 'Error'
 
     def addDockerBDD(self,request):
+        """
+        Fonction pour ajouter un conteneur a la base de donnees.
+        :param request:
+        :return: errors
+        """
         try:
             specs = f'{self.image},{self.ports},{self.command},{self.environment},{self.network },{self.volumes}'
             getStatus = self.dockerStatus()
@@ -94,6 +108,11 @@ class DockerService:
             print(f"Error adding container to database: {e}")
 
     def removeDockerBDD(self,name):
+        """
+        Fonction pour supprimer un conteneur de la base de donnees.
+        :param name:
+        :return:
+        """
         try:
             container = Container.objects.get(name=name)
             container.delete()
@@ -105,6 +124,11 @@ class DockerService:
 
 
     def download_image(self, url):
+        """
+        Fonction pour telecharger une image Docker. Image du docker hub uniquement. Via le nom de l'image.
+        :param url:
+        :return:
+        """
         try:
             self.image = client.images.pull(url)
         except errors.APIError as e:
@@ -113,6 +137,11 @@ class DockerService:
         return self.image
 
     def docker_create(self,request):
+        """
+        Fonction pour creer un conteneur Docker. Utilise les attributs de la classe. Les utilisent pour creer un conteneur.
+        :param request:
+        :return: message de reussite ou d'echec avec les informations du conteneur
+        """
         self.image = self.download_image(self.image)
 
         try:
@@ -133,6 +162,11 @@ class DockerService:
             return None
 
     def docker_run(self,name):
+        """
+        Fonction pour demarrer un conteneur Docker. Via le nom du conteneur.
+        :param name:
+        :return: message de reussite ou d'echec ou errors
+        """
         container= client.containers.get(name)
         if container:
             try:
@@ -144,6 +178,11 @@ class DockerService:
         return None
 
     def docker_stop(self,name):
+        """
+        Fonction pour arreter un conteneur Docker. Via le nom du conteneur.
+        :param name:
+        :return: message de reussite ou d'echec ou errors
+        """
         container = client.containers.get(name)
         if container:
             try:
@@ -154,6 +193,11 @@ class DockerService:
                 return None
 
     def docker_remove(self, name):
+        """
+        Fonction pour supprimer un conteneur Docker. Via le nom du conteneur.
+        :param name:
+        :return: message de reussite ou d'echec ou errors
+        """
         try:
             container = client.containers.get(name)
             if container:
@@ -170,10 +214,26 @@ class DockerService:
         return None
 
     def docker_list(self):
-        return client.containers.list(all=True)
-
+        """
+        Fonction pour lister les conteneurs Docker. Tous les conteneurs.
+        :return: liste des conteneurs
+        """
+        containers = []
+        for container in client.containers.list(all=True):
+            containers.append({
+                "id": container.id,
+                "name": container.name,
+                "status": container.status,
+                "image": container.image.tags[0] if container.image.tags else "No tag"
+            })
+        return containers
 
     def docker_list_user(self, request):
+        """
+        Fonction pour lister les conteneurs Docker. Seulement les conteneurs de l'utilisateur connecte.
+        :param request:
+        :return: liste des conteneurs
+        """
         userLogin = get_user(request)
         user_containers = []
         for container in client.containers.list(all=True):
@@ -187,11 +247,20 @@ class DockerService:
         return user_containers
 
     def list_images(self):
+        """
+        Fonction pour lister les images Docker.
+        :return: liste des images
+        """
 
         return client.images.list()
 
 
     def getPortExposed(self, dockerfile):
+        """
+        Fonction pour obtenir le port expose dans un Dockerfile.
+        :param dockerfile: le fichier dockerfile
+        :return: parts[1] : le port expose
+        """
         dockerfile_content = dockerfile.read().decode("utf-8")
         dockerfile.seek(0)
         for line in dockerfile_content.splitlines():
@@ -202,6 +271,13 @@ class DockerService:
         raise ValueError("No EXPOSE directive found in Dockerfile")
 
     def run_dockerfile(self, request, dockerfile, name):
+        """
+        Fonction pour creer un conteneur Docker a partir d'un Dockerfile.
+        :param request: la requete http
+        :param dockerfile: le fichier dockerfile
+        :param name: nom a donner au conteneur
+        :return: message de reussite ou d'echec ou errors
+        """
         try:
             if dockerfile is None:
                 raise ValueError("Dockerfile is None")
@@ -233,6 +309,11 @@ class DockerService:
             return None
 
     def getPortCompose(self, ports):
+        """
+        Fonction pour obtenir les ports d'un conteneur a partir d'un fichier docker-compose.yml.
+        :param ports:
+        :return:  liste des ports du conteneur
+        """
         if not ports:
             pass
         container_ports = [int(port.split(':')[1]) for port in ports]
@@ -240,6 +321,13 @@ class DockerService:
 
 
     def run_compose(self,request, compose_data, name):
+        """
+        Fonction pour creer un conteneur Docker a partir d'un fichier docker-compose.yml.
+        :param request: requete http
+        :param compose_data: le fichier docker-compose.yml
+        :param name: le nom a donner au conteneur
+        :return: message de reussite ou d'echec ou errors
+        """
 
         try:
             if compose_data is None:
@@ -283,6 +371,11 @@ class DockerService:
             return f"Error creating containers: {str(e)}"
 
     def get_logs(self,name):
+        """
+        Fonction pour obtenir les logs d'un conteneur Docker.
+        :param name: nom du conteneur
+        :return: les messages d'ereurs, les logs
+        """
         container = client.containers.get(name)
         if container:
             try:
@@ -294,6 +387,11 @@ class DockerService:
         return None
 
     def get_Docker_error(self, name):
+        """
+        Fonction pour obtenir les erreurs d'un conteneur Docker.
+        :param name: nom du conteneur
+        :return: les messages d'erreurs, les erreurs du conteneur
+        """
         try:
             container = client.containers.get(name)
             if container:

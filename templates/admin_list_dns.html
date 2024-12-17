@@ -1,0 +1,38 @@
+{% include 'sidebar.html' %}
+{% load static %}
+<div id="main" style="margin-left: 20%;">
+    <div class="typeContainer">
+        <h1 class="title">Les enregistrements DNS:</h1>
+
+        {% if registrements %}
+            <table class="containerTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>acceder</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for dns in registrements %}
+                    <tr>
+                        <td>{{ registrements.id }}</td>
+                        <td>{{ registrements.name }}</td>
+                        <td >
+                            <form class="formtab" method="POST" >
+                                {% csrf_token %}
+                                <a href="http://{{ container.name }}.dockeronline.ovh" target="_blank" class="go">acceder</a>
+                            </form>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No DNS found.</p>
+        {% endif %}
+    </div>
+</div>
+
+</div>

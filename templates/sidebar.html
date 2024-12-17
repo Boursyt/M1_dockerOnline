@@ -7,11 +7,11 @@
                 
             <div class="top">
                 <h3 style="font-size:120%;background: linear-gradient(to right, #FFC107, #FFA000);-webkit-background-clip: text; color: transparent; text-align: center; margin: 5%;">Administration</h3>
-                <a class="link {% if menu.page == 'home_admin'%}active{% endif %}" href="{% url 'home_admin' %}">overviews</a>
+                <a class="link {% if menu.page == 'overviews'%}active{% endif %}" href="{% url 'overviews' %}">overviews</a>
                 <a class="link {% if menu.page == 'metrics'%}active{% endif %}" href="{% url 'metrics' %}">metrics</a>
-                <a class="link" href="{% url 'home_admin' %}">containers</a>
-                <a class="link" href="{% url 'home_admin' %}">DNS</a>
-                <a class="link" href="{% url 'home_admin' %}">users</a>
+                <a class="link {% if menu.page == 'container'%}active{% endif %}" href="{% url 'containerListe' %}">container list</a>
+                <a class="link {% if menu.page == 'dns'%}active{% endif %}" href="{% url 'dnsListe' %}">DNS</a>
+                <a class="link" href="{% url 'overviews' %}">users</a>
                 
             </div>
         

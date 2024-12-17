@@ -3,10 +3,17 @@ from prometheus_api_client import PrometheusConnect, PrometheusApiClientExceptio
 from django.http import JsonResponse
 
 class prometheus():
+    """
+    Classe pour récupérer les métriques de Prometheus
+    """
     def __init__(self):
         self.prom = PrometheusConnect(url="http://prometheus.dockeronline.ovh:80", disable_ssl=True)
 
     def get_metrics_cpu(self):
+        """
+        Récupérer les métriques CPU de Prometheus et les met en forme pour les renvoyer en JSON
+        :return:
+        """
         try:
             query = 'rate(node_cpu_seconds_total{mode!="idle"}[5m])'
             cpu_usage_data = self.prom.custom_query(query=query)
@@ -25,6 +32,10 @@ class prometheus():
 
 
     def get_metrics_ram(self):
+        """
+        Récupérer les métriques de RAM de Prometheus et les mettre en forme pour les renvoyer en JSON
+        :return:
+        """
         try:
             # Requêtes pour la mémoire totale et disponible
             query_total = 'node_memory_MemTotal_bytes'
@@ -48,6 +59,10 @@ class prometheus():
             return JsonResponse({'error': 'An unexpected error occurred: ' + str(e)})
 
     def get_metrics_disk(self):
+        """
+        Récupérer les métriques de disque de Prometheus et les mettre en forme pour les renvoyer en JSON
+        :return:
+        """
         try:
             # Requêtes pour la taille totale et l'espace disponible du disque
             query_size = 'sum(node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})'

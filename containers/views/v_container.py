@@ -6,6 +6,11 @@ from django.http import JsonResponse
 import yaml
 # #bouton qui utilise la fonction docker_run de la class DockerService
 def start_container(request):
+    """
+    Fonction pour rendre la page de creation de conteneur /container/
+    :param request:
+    :return: render de la page de creation de conteneur
+    """
     user = request.user
 
     if user.is_authenticated:
@@ -21,6 +26,11 @@ def start_container(request):
 
 
 def container(request):
+    """
+    Fonction qui permet de creer un conteneur avec les info du formulaire. redirect sur la page de liste de conteneur
+    :param request:
+    :return: redirect sur la page de liste de conteneur
+    """
     if request.method == 'POST':
 
         try:
@@ -59,6 +69,11 @@ def container(request):
 
 
 def dockerfile(request):
+    """
+    Fonction qui permet de creer un conteneur avec un Dockerfile. redirect sur la page de liste de conteneur
+    :param request:
+    :return: redirect sur la page de liste de conteneur
+    """
     if request.method == 'POST':
 
         if 'dockerfile' not in request.FILES:
@@ -82,6 +97,11 @@ def dockerfile(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def compose(request):
+    """
+    Fonction qui permet de creer un conteneur avec un fichier docker-compose.yml. redirect sur la page de liste de conteneur
+    :param request:
+    :return: redirect sur la page de liste de conteneur
+    """
     if request.method == 'POST':
         # Vérifie si le fichier a été fourni
         if 'composefile' not in request.FILES:

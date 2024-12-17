@@ -4,6 +4,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 
 def loginForm(request):
+    """
+    Vue de connexion de l'utilisateur. Utilise le formulaire d'authentification Django.
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
