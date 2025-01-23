@@ -5,4 +5,9 @@
 /.python-version
 /pyvenv.cfg
 /lib64/
+/lib/
+/bin/
+.idea/
+include/
+
 

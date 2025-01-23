@@ -1,0 +1,71 @@
+{% load static %}
+{% include 'header.html' %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>elFinder Interface</title>
+
+    <!-- Charger jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Charger jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <!-- Ajouter les fichiers CSS et JS d'elFinder -->
+    <link rel="stylesheet" href="{% static 'css/elfinder.full.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+
+    <script src="{% static 'js/elfinder/elfinder.min.js' %}"></script>
+    <script src="{% static 'js/elfinder/i18n/elfinder.fr.js' %}"></script>
+    <script src="{% static 'js/elfinder/extras/editors.default.js' %}"></script>
+
+</head>
+<body>
+    <!-- Conteneur pour l'interface elFinder -->
+    <div id="elfinder" style="width: 100%; height: 80%;"></div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            console.log("Initialisation de elFinder...");
+
+            // Initialiser elFinder
+            $('#elfinder').elfinder({
+                url: '/file/elfinder/connector/',  // URL du connecteur
+                lang: 'fr',  // Langue
+                height: 500, // Hauteur de l'UI
+                handlers: {
+                    init: function(event, instance) {
+                        instance.exec('reload');
+                    }
+                },
+                uiOptions: {
+                    toolbar: [
+                        ['back', 'forward'],
+                        ['reload'],
+                        ['mkdir', 'upload'],
+                        ['download', 'cut', 'copy', 'paste'],
+                        ['info', 'search'],
+                        ['view', 'sort']
+                    ]
+                },
+                commandsOptions: {
+                    upload: {
+                        ui: 'dropzone'
+                    }
+                },
+                handlers: {
+                    error: function(event, instance) {
+                        console.error("Erreur elFinder : ", event.data.error);
+                    }
+                },
+                resizable: true
+            });
+        });
+    </script>
+</body>
+</html>
+

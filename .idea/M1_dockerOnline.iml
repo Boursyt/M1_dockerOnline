@@ -16,6 +16,8 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/lib" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (M1_dockerOnline)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -9,6 +9,4 @@ urlpatterns = [
     path('register/', v_register.registerForm, name='register'),
     path('logout/', v_logout.Userlogout, name='logout'),
 
-
-
 ]

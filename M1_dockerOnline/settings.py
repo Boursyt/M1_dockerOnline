@@ -34,6 +34,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Dossier où les fichiers médias sont stockés
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# URL pour accéder aux fichiers médias
+MEDIA_URL = '/media/'
 
 # Application definition
 
@@ -48,9 +53,10 @@ INSTALLED_APPS = [
     'core',
     'user',
     'admin_customs',
-    'dns'
-
+    'dns',
+    'file_explorer',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -131,6 +137,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
