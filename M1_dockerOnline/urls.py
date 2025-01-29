@@ -24,5 +24,7 @@ urlpatterns = [
     path('admin/', include('admin_customs.urls')),
     path('container/', include('containers.urls')),
     path('user/', include('user.urls')),
-    path('admin/', include('dns.urls'))
+    path('admin/', include('dns.urls')),
+    path('file/', include('filemanager.urls'))
+
 ]

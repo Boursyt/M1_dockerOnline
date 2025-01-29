@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'core',
     'user',
     'admin_customs',
-    'dns'
+    'dns',
+    'filemanager'
 
 ]
 
