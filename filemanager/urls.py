@@ -1,10 +1,8 @@
 from django.urls import path
 from . import views
-from .views import
+from .views import v_file
 
 urlpatterns = [
 
-    path('', , name='file'),
-
-
+    path('', v_file.Showfile , name='file'),
 ]
