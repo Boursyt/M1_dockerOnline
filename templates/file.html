@@ -1,0 +1,34 @@
+{% include 'header.html' %}
+<body>
+<div class="typeContainer">
+    <h1 class="title">Vos fichier:</h1>
+
+    {% if files %}
+        <table class="containerTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>date</th>
+                    <th>type</th>
+                    <th>size</th>
+                    <th>supprimer</th>
+                    <th>télécharger</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for file in files %}
+                <tr>
+                    <td>{{ file.name }}</td>
+                    <td>{{ file.date }}</td>
+                    <td>{{ file.type }}</td>
+                    <td>{{ file.size }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No file found.</p>
+    {% endif %}
+</div>
+</body>
