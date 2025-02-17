@@ -1,6 +1,10 @@
 import math
 import os
 from datetime import datetime
+
+from django.http import HttpResponse, FileResponse
+
+
 class File:
 
     def convert_size(self, size_bytes):
@@ -34,38 +38,55 @@ class File:
                 filesList['size'].append(self.convert_size(size))
                 filesList['date'].append(datetime.fromtimestamp(os.path.getctime(f'{path}/{user}/{file}')))
                 filesList['type'].append(os.path.splitext(file)[1])
-            print(filesList)
             return filesList
         except Exception as e:
-            print("no file")
-            print(e)
             return {'error': str(e)}
 
 
-    def importFile(self, path, user,name,file):
+    def importFile(self, path, user,file):
         """
         Import file in the path
         """
         try:
-            with open(f'{path}/{user}/{file.name}', 'wb+') as destination:
-                if name in os.listdir(f'{path}/{user}'):
-                    return {'error': 'File already exists'}
-                else:
-                    for chunk in file.chunks():
-                        destination.write(chunk)
-                    return {'success': 'File imported'}
+            name = file.name
+            file_path = os.path.join(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{name}')
+
+            # Vérifiez si le fichier existe avant d'ouvrir le fichier en écriture
+            if os.path.exists(file_path):
+                return {'error': 'File already exists'}
+
+            with open(file_path, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            return {'success': 'File imported'}
         except Exception as e:
             return {'error': str(e)}
 
     def exportFile(self, path, user, file):
-        pass
+        """
+        Export file in the path for download
+        """
+        try:
+            file_path = f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}'
+            if not os.path.exists(file_path):
+                return {'error': 'File not found'}
+
+            # Utiliser FileResponse pour envoyer le fichier en réponse HTTP
+            response = FileResponse(open(file_path, 'rb'))
+            response['Content-Disposition'] = f'attachment; filename="{file}"'
+            response['Content-Type'] = 'application/octet-stream'  # Forcer le téléchargement
+            print(response)
+            return response
+        except Exception as e:
+            print(e)
+            return {'error': str(e)}
 
     def deleteFile(self, path, user, file):
         """
         Delete file in the path
         """
         try:
-            os.remove(f'{path}/{user}/{file}')
+            os.remove(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}')
             return {'success': 'File deleted'}
         except Exception as e:
             return {'error': str(e)}
