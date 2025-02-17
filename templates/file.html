@@ -1,6 +1,21 @@
 {% include 'header.html' %}
+{% load static %}
+
 <body>
 <div class="typeContainer">
+    <h1 class="title">Un nouveau fichier ? </h1>
+
+    <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'upload' %}" id="fileUploadForm">
+        {% csrf_token %}
+        <div id="fileDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
+            <p>Drag & drop votre fichier ici ou cliquer pour le selectionner</p>
+            <input type="file" name="file" id="fileInput" style="display: none;">
+        </div>
+        <p id="fileName" style="margin-top: 10px; color: #666;"></p>
+
+        <button class="boutton" style="margin: 1%" type="submit">Upload</button>
+    </form>
+
     <h1 class="title">Vos fichier:</h1>
 
     {% if files %}
@@ -22,6 +37,17 @@
                     <td>{{ file.date }}</td>
                     <td>{{ file.type }}</td>
                     <td>{{ file.size }}</td>
+                    <td>
+                        <form class="formtab" method="POST" action="{% url 'supprimer_container' file.name %}">
+                            {% csrf_token %}
+                            <button class="delete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="formtab" method="GET" action="{% url 'telecharger_fichier' file.name %}">
+                            {% csrf_token %}
+                            <button class="go" type="submit">Download</button>
+                        </form>
 
                 </tr>
             {% endfor %}
@@ -31,4 +57,7 @@
         <p>No file found.</p>
     {% endif %}
 </div>
+
+<script src="{% static 'js/fileDropZone.js' %}"></script>
+
 </body>

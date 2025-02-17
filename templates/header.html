@@ -19,6 +19,9 @@
             <li class="nav-item">
                 <a href="{% url 'liste_page' %}" class="nav-link {% if menu.page == 'liste' %}active{% endif %}" aria-current="page">Liste des conteneurs</a>
             </li>
+            <li class="nav-item">
+                <a href="{% url 'file' %}" class="nav-link {% if menu.page == 'file' %}active{% endif %}" aria-current="page">Vos fichiers</a>
+            </li>
         </ul>
 
     </div>

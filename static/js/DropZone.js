@@ -65,3 +65,5 @@ composeFileInput.addEventListener('change', () => {
         composeFileNameDisplay.textContent = "Fichier sélectionné : " + composeFileInput.files[0].name;
     }
 });
+
+
