@@ -95,3 +95,21 @@ class File:
         except Exception as e:
             return {'error': str(e)}
 
+    def creatUserDir(self, path,user):
+        """
+        Create a directory for the user
+        """
+        try:
+            os.makedirs(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}')
+            return {'success': 'Directory created'}
+        except Exception as e:
+            return {'error': str(e)}
+
+    def existUserDir(self, path,user):
+        """
+        Check if the user directory exist, return True if it exist
+        """
+        try:
+            return os.path.exists(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}')
+        except Exception as e:
+            return {'error': str(e)}
