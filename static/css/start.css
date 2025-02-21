@@ -34,3 +34,28 @@
 .title {
 margin-bottom: 1%;
 }
+
+.dropzone {
+    border: 2px dashed #0087F7;
+    border-radius: 1rem;
+    padding: 1%;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    margin-top: 1%;
+}
+
+.BackgroundInfo{
+    background-color: #8eb2f5;
+    opacity: 0.75;
+    border-radius: 0.9rem;
+}
+
+.info{
+    margin: 1%;
+    padding: 1%;
+    color: black;
+    opacity: 100%;
+}
+

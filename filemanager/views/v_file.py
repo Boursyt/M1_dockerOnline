@@ -38,7 +38,9 @@ def listeFile(request):
             "name": fileList["name"][i],
             "size": fileList["size"][i],
             "date": fileList["date"][i],
-            "type": fileList["type"][i]
+            "type": fileList["type"][i],
+            "content": fileList["content"][i],
+            "path":fileList["path"][i]
         })
     return files
 

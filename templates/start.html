@@ -17,38 +17,77 @@
             </form>
         
         </div>
-        
+
         <div class="typeContainer card2">
             <h1 class="title">Lancer un docker à partir d'un dockerfile</h1>
+            <h3 class="title">A partir d'un nouveau fichier</h3>
             <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'dockerfile' %}" id="dockerUploadForm">
                 {% csrf_token %}
                 <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
-                <div id="dockerDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
+
+                <div class="dropzone" id="dockerDropZone" >
                     <p>Drag & drop votre fichier dockerfile ici ou cliquer pour le selectionner</p>
-                    <input type="file" name="dockerfile" id="dockerFileInput" style="display: none;">
+                    <input type="file" name="dockerfile" id="dockerFileInput" style="display: none;" required>
                 </div>
                 <p id="dockerFileName" style="margin-top: 10px; color: #666;"></p>
                 <button class="boutton" style="margin: 1%" type="submit">Start</button>
             </form>
+
+            <h3 class="title">A partir d'un fichier deja importé</h3>
+            <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'dockerfile' %}" id="dockerUploadForm">
+                {% csrf_token %}
+                <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
+                <select class="dropzone" name="filepath" required>
+                    {% for file in files %}
+                        {% if file.type == "" %}
+                            <option value="{{ file.path }}">{{ file.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button class="boutton" style="margin: 1%" type="submit">Start</button>
+
+            </form>
+
+
         </div>
-        
+
+
+
+
+
         <div class="typeContainer card2 ">
             <h1 class="title">Lancer un docker à partir d'un compose.yml</h1>
+            <h3 class="title">A partir d'un nouveau fichier</h3>
+
             <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'compose' %}" id="composeUploadForm">
                 {% csrf_token %}
                 <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
-                <div id="composeDropZone" style="border: 2px dashed #ccc; padding: 20px; cursor: pointer;">
+                <div class="dropzone" id="composeDropZone" >
                     <p>Drag & drop votre fichier compose.yml ici ou cliquer pour le selectionner</p>
-                    <input type="file" name="composefile" id="composeFileInput" style="display: none;">
+                    <input type="file" name="composefile" id="composeFileInput" style="display: none;" required>
                 </div>
                 <p id="composeFileName" style="margin-top: 10px; color: #666;"></p>
                 <button class="boutton" style="margin: 1%" type="submit">Start</button>
             </form>
+
+            <h3 class="title">A partir d'un fichier deja importé</h3>
+            <form class="DockerForms" method="post" enctype="multipart/form-data" action="{% url 'compose' %}" id="composeUploadForm">
+                 {% csrf_token %}
+                <textarea class="texteareaDocker" name="name" placeholder="Nom du conteneur" required></textarea>
+                <select class="dropzone" name="filepath" required>
+                    {% for file in files %}
+                        {% if file.type == ".yml" %}
+                            <option value="{{ file.path }}">{{ file.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button class="boutton" style="margin: 1%" type="submit">Start</button>
+
+            </form>
+
+
         </div>
-        
-        
-        
-        
+
         <script src="{% static 'js/DropZone.js' %}"></script>
     </body>
 </main>

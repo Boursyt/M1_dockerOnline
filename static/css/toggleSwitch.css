@@ -177,3 +177,15 @@ body.light-mode .containerTable th {
 body.light-mode .containerTable td {
     background-color: #ebebeb;
 }
+
+body.light-mode .dropzone{
+        background-color: #D5D5D5FF;
+        color: black;
+
+}
+
+body.dark-mode .dropzone{
+        background-color: #404040FF;
+        color: white;
+
+}
