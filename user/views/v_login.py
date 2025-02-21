@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
+from filemanager.services.s_gestionFile import File
 
 def loginForm(request):
     """
@@ -16,6 +17,9 @@ def loginForm(request):
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
             if user is not None:
+                existUserDir = File().existUserDir('filedir', user)
+                if not existUserDir:
+                    File().creatUserDir('filedir', user)
                 login(request, user)
                 return redirect('home')  # Redirect to a home page or dashboard
             else:
