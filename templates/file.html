@@ -28,6 +28,7 @@
                     <th>size</th>
                     <th>supprimer</th>
                     <th>télécharger</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +39,7 @@
                     <td>{{ file.type }}</td>
                     <td>{{ file.size }}</td>
                     <td>
-                        <form class="formtab" method="POST" action="{% url 'supprimer_container' file.name %}">
+                        <form class="formtab" method="POST" action="{% url 'supprimer_fichier' file.name %}">
                             {% csrf_token %}
                             <button class="delete" type="submit">Delete</button>
                         </form>
@@ -48,6 +49,8 @@
                             {% csrf_token %}
                             <button class="go" type="submit">Download</button>
                         </form>
+                    </td>
+
 
                 </tr>
             {% endfor %}

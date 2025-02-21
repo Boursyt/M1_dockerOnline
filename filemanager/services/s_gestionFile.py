@@ -31,6 +31,8 @@ class File:
                 'size': [],
                 'date': [],
                 'type': [],
+                'content': [],
+                'path': []
             }
             for file in files:
                 filesList['name'].append(file)
@@ -38,6 +40,8 @@ class File:
                 filesList['size'].append(self.convert_size(size))
                 filesList['date'].append(datetime.fromtimestamp(os.path.getctime(f'{path}/{user}/{file}')))
                 filesList['type'].append(os.path.splitext(file)[1])
+                filesList['content'].append(open(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}').read())
+                filesList['path'].append(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}')
             return filesList
         except Exception as e:
             return {'error': str(e)}
