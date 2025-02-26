@@ -3,7 +3,8 @@ import os
 from datetime import datetime
 
 from django.http import HttpResponse, FileResponse
-
+global src
+src = 'C:/Users/hypto/PycharmProjects/M1_dockerOnline'
 
 class File:
 
@@ -25,7 +26,7 @@ class File:
 
         """
         try:
-            files = os.listdir(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}')
+            files = os.listdir(f'{src}/{path}/{user}')
             filesList = {
                 'name': [],
                 'size': [],
@@ -40,8 +41,8 @@ class File:
                 filesList['size'].append(self.convert_size(size))
                 filesList['date'].append(datetime.fromtimestamp(os.path.getctime(f'{path}/{user}/{file}')))
                 filesList['type'].append(os.path.splitext(file)[1])
-                filesList['content'].append(open(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}').read())
-                filesList['path'].append(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}')
+                filesList['content'].append(open(f'{src}/{path}/{user}/{file}').read())
+                filesList['path'].append(f'{src}/{path}/{user}/{file}')
             return filesList
         except Exception as e:
             return {'error': str(e)}
@@ -53,7 +54,7 @@ class File:
         """
         try:
             name = file.name
-            file_path = os.path.join(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{name}')
+            file_path = os.path.join(f'{src}/{path}/{user}/{name}')
 
             # Vérifiez si le fichier existe avant d'ouvrir le fichier en écriture
             if os.path.exists(file_path):
@@ -71,7 +72,7 @@ class File:
         Export file in the path for download
         """
         try:
-            file_path = f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}'
+            file_path = f'{src}/{path}/{user}/{file}'
             if not os.path.exists(file_path):
                 return {'error': 'File not found'}
 
@@ -90,7 +91,7 @@ class File:
         Delete file in the path
         """
         try:
-            os.remove(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}/{file}')
+            os.remove(f'{src}/{path}/{user}/{file}')
             return {'success': 'File deleted'}
         except Exception as e:
             return {'error': str(e)}
@@ -100,7 +101,7 @@ class File:
         Create a directory for the user
         """
         try:
-            os.makedirs(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}')
+            os.makedirs(f'{src}/{path}/{user}')
             return {'success': 'Directory created'}
         except Exception as e:
             return {'error': str(e)}
@@ -110,6 +111,6 @@ class File:
         Check if the user directory exist, return True if it exist
         """
         try:
-            return os.path.exists(f'/home/theo/PycharmProjects/M1_dockerOnline/{path}/{user}')
+            return os.path.exists(f'{src}/{path}/{user}')
         except Exception as e:
             return {'error': str(e)}
