@@ -1,7 +1,12 @@
 {% include 'sidebar.html' %}
+{% load static %}
 <body>
-<div id="main" style="margin-left: 17%;"> <!-- Décale le contenu principal -->
+<div id="main" style="margin-left: 17%;">
+    <!-- Décale le contenu principal -->
     <div class="typeContainer">
+
+        <H1 class="title"> Creer un utilisateur</H1>
+
         <h1 class="title">Les utilisateurs:</h1>
 
         {% if users %}
@@ -26,12 +31,9 @@
                         <td>{{ user.lastname }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.is_superuser }}</td>
-
                         <td>
-                            <form class="formtab" method="POST" action="{% url 'update_user' user.username%}">
-                                {% csrf_token %}
-                                <button class="go" type="submit">update</button>
-                            </form>
+                            {% csrf_token %}
+                            <button class="mod" data-user-id="{{ user.username }}">Modifier</button>
                         </td>
                         <td>
                             <form class="formtab" method="POST" action="{% url 'delete_user' user.username%}">
@@ -44,10 +46,34 @@
                 {% endfor %}
                 </tbody>
             </table>
+
+            <div id="edit-modal" style="display: none;">
+              <form class="card" id="edit-form">
+                  <div class="forms">
+                    <label  for="username">Nom d'utilisateur:</label>
+                    <input class="forms-input" type="text" id="username" name="username">
+
+                    <label for="firstname" >Prenom</label>
+                    <input class="forms-input" type="text" id="firstname" name="firstname">
+
+                    <label for="lastname">Nom</label>
+                    <input class="forms-input" type="text" id="lastname" name="lastname">
+
+                    <label for="email">Email</label>
+                    <input class="forms-input" type="email" id="email" name="email">
+
+                    <label for="is_superuser">Admin</label>
+                    <input class="forms-input" type="checkbox" id="is_superuser" name="is_superuser">
+                <!-- Ajoute d'autres champs selon tes besoins -->
+                <button class="go" type="submit">Enregistrer</button>
+            </div>
+
+              </form>
+            </div>
         {% else %}
             <p>No users found.</p>
         {% endif %}
     </div>
 </div>
-
+<script src="{% static 'js/PopUp_UpdateUser.js'%}"></script>
 </body>

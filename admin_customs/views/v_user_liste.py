@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from admin_customs.services.s_userAdmin import manageUser
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 def admin_user_liste_page(request):
     """
@@ -44,7 +45,7 @@ def admin_listeUser(request):
 
 def admin_supprimer_user(request, username):
     """
-
+        supprimer un utilisateur
     """
     if request.method == 'POST':
         manageUser().deleteUser(username)
@@ -52,3 +53,28 @@ def admin_supprimer_user(request, username):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+# formulaire de modification d'un utilisateur, dans un menu qui ce superpose
+def edit_user(request, username):
+    """
+    Modifier un utilisateur ou récupérer ses informations
+    """
+    if request.method == 'POST':
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        is_superuser = request.POST.get('is_superuser') == 'on'  # Convertir en booléen
+        manageUser().updateUser(username, firstname, lastname, email, is_superuser)
+        return redirect('userListe')
+
+    elif request.method == 'GET':
+        user = get_object_or_404(User, username=username)
+        user_data = {
+            'firstname': user.firstname,
+            'lastname': user.lastname,
+            'email': user.email,
+            'is_superuser': user.is_superuser,
+        }
+        return JsonResponse(user_data)
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)

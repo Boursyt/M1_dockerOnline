@@ -21,6 +21,17 @@
     color: white;
     font-weight: bold;
 }
+.mod{
+    border: none;
+    margin: 0;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    background-color: dodgerblue;
+    border-radius: 10%;
+    color: white;
+    font-weight: bold;
+}
 .formtab{
     align-items: center;
     justify-content: center;

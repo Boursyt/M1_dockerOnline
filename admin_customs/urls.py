@@ -14,7 +14,7 @@ urlpatterns = [
     path("dns",v_dns_list.admin_dns_liste_page, name='dnsListe'),
     path("user", v_user_liste.admin_user_liste_page, name='userListe'),
 
-    path("user/delete/<str:username>", v_user_liste.admin_user_liste_page, name='update_user'),
-    path("user/update/<str:username>", v_user_liste.admin_supprimer_user, name='delete_user'),
+    path("user/update/<str:username>", v_user_liste.edit_user, name='update_user'),
+    path("user/delete/<str:username>", v_user_liste.admin_supprimer_user, name='delete_user'),
 
 ]

@@ -189,3 +189,30 @@ body.dark-mode .dropzone{
         color: white;
 
 }
+
+body.darkmode #edit-modal {
+  /* Style pour la boîte modale */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #404040FF !important;
+    color: white;
+
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+body.light-mode #edit-modal {
+  /* Style pour la boîte modale */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #D5D5D5FF;
+    color: black;
+
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
