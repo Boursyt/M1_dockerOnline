@@ -7,6 +7,21 @@
 
         <H1 class="title"> Creer un utilisateur</H1>
 
+            <form class="card" method="POST" action="{% url 'create_user' %}">
+                {% csrf_token %}
+                <div class="forms">
+                    <input type="text" id="username" name="username" class="forms-input" placeholder="Nom d'utilisateur" required>
+                    <input type="text" id="first_name" name="first_name" class="forms-input" placeholder="Prénom" required>
+                    <input type="text" id="last_name" name="last_name" class="forms-input" placeholder="Nom" required>
+                    <input type="email" id="email" name="email" class="forms-input" placeholder="Email" required>
+                    <input type="password" id="password1" name="password1" class="forms-input" placeholder="Mot de passe" required>
+                    <input type="password" id="password2" name="password2" class="forms-input" placeholder="Confirmer le mot de passe" required>
+                    <label for="is_superuser">Admin : </label>
+                    <input type="checkbox" id="is_superuser" name="is_superuser" class="forms-input" placeholder="Admin" required>
+                </div>
+                <button class="boutton" type="submit">S'inscrire</button>
+            </form>
+
         <h1 class="title">Les utilisateurs:</h1>
 
         {% if users %}

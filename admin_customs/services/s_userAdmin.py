@@ -58,8 +58,3 @@ class manageUser:
             return True
         except:
             return False
-
-    def createUser(self, username, firstname, lastname, email, password, is_superuser):
-        authentification.register_user(username, firstname, lastname, email, password)
-        user = User.objects.get(username=username)
-        user.is_superuser = is_superuser

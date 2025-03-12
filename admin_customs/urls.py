@@ -16,5 +16,6 @@ urlpatterns = [
 
     path("user/update/<str:username>", v_user_liste.edit_user, name='update_user'),
     path("user/delete/<str:username>", v_user_liste.admin_supprimer_user, name='delete_user'),
+    path("user/create", v_user_liste.registerFormAdmin, name='create_user'),
 
 ]

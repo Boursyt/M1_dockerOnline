@@ -1,7 +1,11 @@
+from django.contrib.auth import login
 from django.shortcuts import render, redirect, get_object_or_404
 from admin_customs.services.s_userAdmin import manageUser
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from filemanager.services.s_gestionFile import File
+from user.forms.f_register import CustomUserCreationForm
+
 
 def admin_user_liste_page(request):
     """
@@ -78,3 +82,26 @@ def edit_user(request, username):
 
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+def registerFormAdmin(request):
+    """
+    Fonction d'inscription de l'utilisateur. Formulaire d'inscription personnalisé
+    :param request:
+    :return:
+    """
+
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            File().creatUserDir('filedir', user.username)
+            return redirect('userListe')  # Redirection vers la page d'accueil
+        else:
+            print(form.errors)
+    else:
+        form = CustomUserCreationForm()
+
+    return redirect('userListe')
