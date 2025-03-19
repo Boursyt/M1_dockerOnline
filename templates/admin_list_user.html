@@ -1,0 +1,94 @@
+{% include 'sidebar.html' %}
+{% load static %}
+<body>
+<div id="main" style="margin-left: 17%;">
+    <!-- Décale le contenu principal -->
+    <div class="typeContainer">
+
+        <H1 class="title"> Creer un utilisateur</H1>
+
+            <form class="card" method="POST" action="{% url 'create_user' %}">
+                {% csrf_token %}
+                <div class="forms">
+                    <input type="text" id="username" name="username" class="forms-input" placeholder="Nom d'utilisateur" required>
+                    <input type="text" id="first_name" name="first_name" class="forms-input" placeholder="Prénom" required>
+                    <input type="text" id="last_name" name="last_name" class="forms-input" placeholder="Nom" required>
+                    <input type="email" id="email" name="email" class="forms-input" placeholder="Email" required>
+                    <input type="password" id="password1" name="password1" class="forms-input" placeholder="Mot de passe" required>
+                    <input type="password" id="password2" name="password2" class="forms-input" placeholder="Confirmer le mot de passe" required>
+                    <label for="is_superuser">Admin : </label>
+                    <input type="checkbox" id="is_superuser" name="is_superuser" class="forms-input" placeholder="Admin" required>
+                </div>
+                <button class="boutton" type="submit">S'inscrire</button>
+            </form>
+
+        <h1 class="title">Les utilisateurs:</h1>
+
+        {% if users %}
+            <table class="containerTable">
+                <thead>
+                <tr>
+                    <th>username</th>
+                    <th>fisrtname</th>
+                    <th>lastname</th>
+                    <th>email</th>
+                    <th>admin</th>
+                    <th>update</th>
+                    <th>delete</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.firstname }}</td>
+                        <td>{{ user.lastname }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.is_superuser }}</td>
+                        <td>
+                            {% csrf_token %}
+                            <button class="mod" data-user-id="{{ user.username }}">Modifier</button>
+                        </td>
+                        <td>
+                            <form class="formtab" method="POST" action="{% url 'delete_user' user.username%}">
+                                {% csrf_token %}
+                                <button class="delete" type="submit">delete</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div id="edit-modal" style="display: none;">
+              <form class="card" id="edit-form">
+                  <div class="forms">
+                    <label  for="username">Nom d'utilisateur:</label>
+                    <input class="forms-input" type="text" id="username" name="username">
+
+                    <label for="firstname" >Prenom</label>
+                    <input class="forms-input" type="text" id="firstname" name="firstname">
+
+                    <label for="lastname">Nom</label>
+                    <input class="forms-input" type="text" id="lastname" name="lastname">
+
+                    <label for="email">Email</label>
+                    <input class="forms-input" type="email" id="email" name="email">
+
+                    <label for="is_superuser">Admin</label>
+                    <input class="forms-input" type="checkbox" id="is_superuser" name="is_superuser">
+                <!-- Ajoute d'autres champs selon tes besoins -->
+                <button class="go" type="submit">Enregistrer</button>
+            </div>
+
+              </form>
+            </div>
+        {% else %}
+            <p>No users found.</p>
+        {% endif %}
+    </div>
+</div>
+<script src="{% static 'js/PopUp_UpdateUser.js'%}"></script>
+</body>

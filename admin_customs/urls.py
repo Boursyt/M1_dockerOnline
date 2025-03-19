@@ -12,8 +12,10 @@ urlpatterns = [
     path("metrics/disk",v_prometheuse.DISK, name='disk'),
     path("container",v_container_list.admin_liste_page, name='containerListe'),
     path("dns",v_dns_list.admin_dns_liste_page, name='dnsListe'),
+    path("user", v_user_liste.admin_user_liste_page, name='userListe'),
 
-
-
+    path("user/update/<str:username>", v_user_liste.edit_user, name='update_user'),
+    path("user/delete/<str:username>", v_user_liste.admin_supprimer_user, name='delete_user'),
+    path("user/create", v_user_liste.registerFormAdmin, name='create_user'),
 
 ]

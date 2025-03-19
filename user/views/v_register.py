@@ -10,16 +10,21 @@ def registerForm(request):
     :param request:
     :return:
     """
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
+
+
             user.save()
 
             login(request, user)  # Connexion automatique après l'inscription
             File().creatUserDir('filedir', user.username)
             return redirect('home')  # Redirection vers la page d'accueil
+        else:
+            print(form.errors)
     else:
         form = CustomUserCreationForm()
 

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.http import HttpResponse, FileResponse
 global src
-src = 'C:/Users/hypto/PycharmProjects/M1_dockerOnline'
+src = '/Users/theo/PycharmProjects/M1_dockerOnline'
 
 class File:
 

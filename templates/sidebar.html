@@ -11,7 +11,7 @@
                 <a class="link {% if menu.page == 'metrics'%}active{% endif %}" href="{% url 'metrics' %}">metrics</a>
                 <a class="link {% if menu.page == 'container'%}active{% endif %}" href="{% url 'containerListe' %}">container list</a>
                 <a class="link {% if menu.page == 'dns'%}active{% endif %}" href="{% url 'dnsListe' %}">DNS</a>
-                <a class="link" href="{% url 'overviews' %}">users</a>
+                <a class="link {% if menu.page == 'user' %}active{% endif %}" href="{% url 'userListe' %}">users</a>
                 
             </div>
         
