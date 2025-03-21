@@ -4,7 +4,7 @@
     <div class="typeContainer">
         <h1 class="title">Les enregistrements DNS:</h1>
 
-        {% if registrements %}
+        {% if enregistrements %}
             <table class="containerTable">
                 <thead>
                 <tr>
@@ -14,14 +14,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for dns in registrements %}
+                {% for dns in enregistrements %}
                     <tr>
-                        <td>{{ registrements.id }}</td>
-                        <td>{{ registrements.name }}</td>
+                        <td>{{ dns.id }}</td>
+                        <td>{{ dns.name }}</td>
                         <td >
                             <form class="formtab" method="POST" >
                                 {% csrf_token %}
-                                <a href="http://{{ container.name }}.dockeronline.ovh" target="_blank" class="go">acceder</a>
+                                {% if dns.name != ""  %}
+                                    <a href="http://{{ dns.name }}.dockeronline.ovh" target="_blank" class="go">acceder</a>
+                                {% else %}
+                                    <a href="http://dockeronline.ovh" target="_blank" class="go">acceder</a>
+                                {% endif %}
                             </form>
                         </td>
 

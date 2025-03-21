@@ -17,12 +17,12 @@ def admin_dns_liste_page(request):
     user = request.user
 
     if user.is_authenticated:
-        registrements = admin_listeDNS()
+        enregistrements = admin_listeDNS()
         context = {
             'menu': {
                 'page': 'list'
             },
-            'registrements': registrements
+            'enregistrements': enregistrements
         }
         return render(request, 'admin_list_dns.html', context)
     else:
@@ -42,13 +42,14 @@ def admin_listeDNS():
     """
 
     dns_list = lsdns()
-    registrement = []
+    enregistrement = []
 
     for dns in dns_list:
-        registrement.append({
+        enregistrement.append({
             "id": dns["id"],
             "name": dns["name"],
 
         })
 
-    return registrement
+    print(enregistrement)
+    return enregistrement
