@@ -1,0 +1,12 @@
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - data_volume:/usr/share/nginx/html            # Volume nommé (géré par toi)
+      - ./nginx-config:/etc/nginx/conf.d             # Volume relatif (doit exister ou sera créé)
+      - /tmp/nginx-logs:/var/log/nginx               # Volume absolu
+
+volumes:
+  data_volume:

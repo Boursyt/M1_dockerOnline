@@ -1,6 +1,7 @@
 import math
 import os
 from datetime import datetime
+import shutil
 
 from django.http import HttpResponse, FileResponse
 global src
@@ -26,7 +27,7 @@ class File:
 
         """
         try:
-            files = os.listdir(f'{src}/{path}/{user}')
+            files = os.listdir(f'{src}/{path}/{user}/files')
             filesList = {
                 'name': [],
                 'size': [],
@@ -37,12 +38,12 @@ class File:
             }
             for file in files:
                 filesList['name'].append(file)
-                size=os.path.getsize(f'{path}/{user}/{file}')
+                size=os.path.getsize(f'{path}/{user}/files/{file}')
                 filesList['size'].append(self.convert_size(size))
-                filesList['date'].append(datetime.fromtimestamp(os.path.getctime(f'{path}/{user}/{file}')))
+                filesList['date'].append(datetime.fromtimestamp(os.path.getctime(f'{path}/{user}/files/{file}')))
                 filesList['type'].append(os.path.splitext(file)[1])
-                filesList['content'].append(open(f'{src}/{path}/{user}/{file}').read())
-                filesList['path'].append(f'{src}/{path}/{user}/{file}')
+                filesList['content'].append(open(f'{src}/{path}/{user}/files/{file}').read())
+                filesList['path'].append(f'{src}/{path}/{user}/files/{file}')
             return filesList
         except Exception as e:
             return {'error': str(e)}
@@ -54,7 +55,7 @@ class File:
         """
         try:
             name = file.name
-            file_path = os.path.join(f'{src}/{path}/{user}/{name}')
+            file_path = os.path.join(f'{src}/{path}/{user}/files/{name}')
 
             # Vérifiez si le fichier existe avant d'ouvrir le fichier en écriture
             if os.path.exists(file_path):
@@ -72,7 +73,7 @@ class File:
         Export file in the path for download
         """
         try:
-            file_path = f'{src}/{path}/{user}/{file}'
+            file_path = f'{src}/{path}/{user}/files/{file}'
             if not os.path.exists(file_path):
                 return {'error': 'File not found'}
 
@@ -91,7 +92,7 @@ class File:
         Delete file in the path
         """
         try:
-            os.remove(f'{src}/{path}/{user}/{file}')
+            os.remove(f'{src}/{path}/{user}/files/{file}')
             return {'success': 'File deleted'}
         except Exception as e:
             return {'error': str(e)}
@@ -101,7 +102,7 @@ class File:
         Create a directory for the user
         """
         try:
-            os.makedirs(f'{src}/{path}/{user}')
+            os.makedirs(f'{src}/{path}/{user}/files')
             os.makedirs(f'{src}/{path}/{user}/volumes')
             return {'success': 'Directory created'}
         except Exception as e:
@@ -112,7 +113,7 @@ class File:
         Delete the user directory
         """
         try:
-            os.rmdir(f'{src}/{path}/{user}')
+            shutil.rmtree(f'{src}/{path}/{user}')
             return {'success': 'Directory deleted'}
         except Exception as e:
             return {'error': str(e)}
@@ -122,6 +123,6 @@ class File:
         Check if the user directory exist, return True if it exist
         """
         try:
-            return os.path.exists(f'{src}/{path}/{user}') and os.path.exists(f'{src}/{path}/{user}/volumes')
+            return os.path.exists(f'{src}/{path}/{user}/files') and os.path.exists(f'{src}/{path}/{user}/volumes')
         except Exception as e:
             return {'error': str(e)}
