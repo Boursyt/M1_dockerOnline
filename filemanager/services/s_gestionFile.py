@@ -106,6 +106,16 @@ class File:
         except Exception as e:
             return {'error': str(e)}
 
+    def deleteUserDir(self, path,user):
+        """
+        Delete the user directory
+        """
+        try:
+            os.rmdir(f'{src}/{path}/{user}')
+            return {'success': 'Directory deleted'}
+        except Exception as e:
+            return {'error': str(e)}
+
     def existUserDir(self, path,user):
         """
         Check if the user directory exist, return True if it exist

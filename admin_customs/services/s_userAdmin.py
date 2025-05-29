@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from user.services.s_auth import authentification
+from filemanager.services.s_gestionFile import File
+
 
 
 class manageUser:
@@ -37,6 +39,11 @@ class manageUser:
         try:
             user = User.objects.get(username=username)
             user.delete()
+            #on supprime son dir
+            File().deleteUserDir('filedir', user.username)
+
+
+
             return True
         except:
             return False
