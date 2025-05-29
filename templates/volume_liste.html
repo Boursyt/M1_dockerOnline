@@ -1,0 +1,40 @@
+{% include 'header.html' %}
+{% load static %}
+
+<body>
+<div class="typeContainer">
+    <h1 class="title">Vos volumes:</h1>
+
+    {% if volumes %}
+        <table class="containerTable">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>path</th>
+                    <th>date</th>
+                    <th>delete</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for volume in volumes %}
+                <tr>
+                    <td>{{ volume.name }}</td>
+                    <td>{{ volume.path }}</td>
+                    <td>{{ volume.date }}</td>
+                    <td>
+                        <form class="formtab" method="POST" action="{% url 'delete_volume' volume.name %}">
+                            {% csrf_token %}
+                            <button class="delete" type="submit">Delete</button>
+                        </form>
+                    </td>
+
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No volume found.</p>
+    {% endif %}
+</div>
+</body>

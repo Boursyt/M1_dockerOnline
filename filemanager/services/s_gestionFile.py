@@ -102,6 +102,7 @@ class File:
         """
         try:
             os.makedirs(f'{src}/{path}/{user}')
+            os.makedirs(f'{src}/{path}/{user}/volumes')
             return {'success': 'Directory created'}
         except Exception as e:
             return {'error': str(e)}
@@ -121,6 +122,6 @@ class File:
         Check if the user directory exist, return True if it exist
         """
         try:
-            return os.path.exists(f'{src}/{path}/{user}')
+            return os.path.exists(f'{src}/{path}/{user}') and os.path.exists(f'{src}/{path}/{user}/volumes')
         except Exception as e:
             return {'error': str(e)}

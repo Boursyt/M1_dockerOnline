@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import v_container, v_liste
+from .views import v_container, v_liste, v_volume
 
 urlpatterns = [
 
@@ -9,6 +9,9 @@ urlpatterns = [
     path('container/', v_container.container, name='container'),
     path('dockerfile/', v_container.dockerfile, name='dockerfile'),
     path('compose/', v_container.compose, name='compose'),
+
+    path('volumes/', v_volume.list_volumes, name='volumes'),
+    path('volumes/delete/<str:volume_name>/', v_volume.delete_volume, name='delete_volume'),
 
     path('liste/', v_liste.liste_page, name='liste_page'),
     path('containers/delete/<str:container_name>/', v_liste.supprimer_container, name='supprimer_container'),

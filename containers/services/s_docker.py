@@ -1,3 +1,5 @@
+from datetime import datetime
+import shutil
 import docker
 from django.contrib.auth import get_user
 from docker import errors
@@ -11,6 +13,7 @@ from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
 load_dotenv()
+src = '/Users/theo/PycharmProjects/M1_dockerOnline'
 
 # Charger les paramètres Docker depuis les variables d'environnement
 host = os.getenv('DOCKER_HOSTS')
@@ -143,6 +146,8 @@ class DockerService:
         :return: message de reussite ou d'echec avec les informations du conteneur
         """
         self.image = self.download_image(self.image)
+        volume_name= self.volumes if self.volumes else []
+        docker_volumes = self.prepare_volumes(get_user(request), volume_name, 'filedir')
 
         try:
             container = client.containers.create(
@@ -150,7 +155,7 @@ class DockerService:
                 image=self.image,
                 command=self.command,
                 ports=self.ports,
-                volumes=self.volumes,
+                volumes= docker_volumes,
                 network='traefik-net',
                 labels=self.traefikRoute(self.name)
             )
@@ -270,41 +275,79 @@ class DockerService:
                     return parts[1]  # Renvoie le port exposé
         raise ValueError("No EXPOSE directive found in Dockerfile")
 
+
+
     def run_dockerfile(self, request, dockerfile, name):
         """
-        Fonction pour creer un conteneur Docker a partir d'un Dockerfile.
-        :param request: la requete http
-        :param dockerfile: le fichier dockerfile
-        :param name: nom a donner au conteneur
-        :return: message de reussite ou d'echec ou errors
+        Fonction pour créer un conteneur Docker à partir d'un Dockerfile, avec détection automatique des VOLUMES.
+        :param request: la requête HTTP
+        :param dockerfile: le fichier Dockerfile
+        :param name: nom à donner au conteneur
+        :return: container ou None
         """
         try:
             if dockerfile is None:
                 raise ValueError("Dockerfile is None")
 
-            expose = self.getPortExposed(dockerfile)
+            dockerfile_content = dockerfile.read().decode("utf-8")
+            dockerfile.seek(0)
+
+            # 1. Obtenir port exposé
+            expose = self.getPortExposed(BytesIO(dockerfile_content.encode()))
             redirect_port = self.counter()
             port = {str(expose): redirect_port}
-            image, _ = client.images.build(fileobj=BytesIO(dockerfile.read()), rm=True, tag="my_image:latest")
+
+            # 2. Extraire les chemins de volumes depuis le Dockerfile
+            volume_paths = []
+            for line in dockerfile_content.splitlines():
+                line = line.strip()
+                if line.startswith("VOLUME"):
+                    try:
+                        # Gère VOLUME ["/data"] ou VOLUME ["/data", "/logs"]
+                        raw = line[line.find("[") + 1:line.find("]")]
+                        parts = raw.split(',')
+                        for part in parts:
+                            path = part.strip().strip('"').strip("'")
+                            if path:
+                                volume_paths.append(path)
+                    except Exception as e:
+                        print(f"Erreur d'analyse de la directive VOLUME: {e}")
+
+            # 3. Build de l'image
+            image, _ = client.images.build(fileobj=BytesIO(dockerfile_content.encode()), rm=True, tag="my_image:latest")
             self.name = name
-            print(f"Image built with tag: {image.tags[0] if image.tags else 'No tag'}")
+            self.image = image.tags[0]
+            print(f"Image built with tag: {self.image}")
+
+            # 4. Création des volumes bindés localement
+            docker_volumes = {}
+            user = get_user(request).username
+
+            for container_path in volume_paths:
+                volume_name = container_path.strip("/").replace("/", "_")  # Exemple: /app/data → app_data
+                host_path = os.path.abspath(f"./filedir/{user}/volumes/{volume_name}")
+                os.makedirs(host_path, exist_ok=True)
+                docker_volumes[host_path] = {'bind': container_path, 'mode': 'rw'}
+
+            # 5. Création du conteneur
             container = client.containers.run(
-                image=image.tags[0],
+                image=self.image,
                 name=self.name,
                 detach=True,
                 ports=port,
+                volumes=docker_volumes,
                 network='traefik-net',
                 labels=self.traefikRoute(self.name)
             )
 
             self.addDockerBDD(request)
-            print(f"Container {image} added to database")
+            print(f"Container {self.name} added to database")
 
             dns = adddns(self.name)
             print(f"Container started with ID: {container.id}")
             return container
 
-        except (errors.BuildError, errors.APIError) as e:
+        except (errors.BuildError, errors.APIError, ValueError) as e:
             print(f"Error building or running container: {e}")
             return None
 
@@ -319,57 +362,87 @@ class DockerService:
         container_ports = [int(port.split(':')[1]) for port in ports]
         return container_ports  # Retourne une liste des ports de conteneur
 
-
-    def run_compose(self,request, compose_data, name):
+    def run_compose(self, request, compose_data, name):
         """
-        Fonction pour creer un conteneur Docker a partir d'un fichier docker-compose.yml.
-        :param request: requete http
-        :param compose_data: le fichier docker-compose.yml
-        :param name: le nom a donner au conteneur
-        :return: message de reussite ou d'echec ou errors
+        Crée des conteneurs Docker à partir d'un fichier docker-compose.yml.
+        Seuls les volumes nommés (ex: data:/app) sont autorisés.
+        Les volumes relatifs (./...) ou absolus (/...) sont ignorés.
         """
-
         try:
             if compose_data is None:
                 raise ValueError("Compose data is None, possibly due to an invalid YAML file.")
+
             services = compose_data.get('services', {})
             if not services:
                 raise ValueError("No services found in compose data")
 
+            user = get_user(request).username
+
             for service_name, service_data in services.items():
                 image = service_data.get('image')
                 if not image:
-                    raise errors.DockerException(f"Missing mandatory 'image' key in service: {service_name}")
+                    raise errors.DockerException(f"Missing 'image' key in service: {service_name}")
 
-                options = {key: value for key, value in service_data.items() if key not in ['image','ports','restart','depends_on']}
                 container_name = f"{name}-{service_name}"
-                self.name=container_name
+                self.name = container_name
 
+                # Préparation des volumes
+                volume_defs = service_data.get('volumes', [])
+                docker_volumes = {}
+
+                for vol in volume_defs:
+                    if ":" not in vol:
+                        continue  # Skip invalid format
+
+                    source, target = vol.split(":", 1)
+                    source = source.strip()
+                    target = target.strip()
+
+                    # Refuser chemins relatifs et absolus
+                    if source.startswith(".") or source.startswith("/"):
+                        print(f"Ignoring unsupported volume source '{source}'")
+                        continue
+
+                    # Création du chemin de volume géré
+                    host_path = os.path.abspath(f"./filedir/{user}/volumes/{source}")
+                    os.makedirs(host_path, exist_ok=True)
+                    docker_volumes[host_path] = {'bind': target, 'mode': 'rw'}
+
+                # Préparation des ports
                 ports = service_data.get('ports', [])
                 container_ports = self.getPortCompose(ports)
                 port_mappings = {}
                 for container_port in container_ports:
-                    redirect_port = self.counter()  # Port redirigé sur l'hôte
+                    redirect_port = self.counter()
                     port_mappings[str(container_port)] = redirect_port
 
+                # Nettoyage des options non traitées
+                options = {
+                    key: value for key, value in service_data.items()
+                    if key not in ['image', 'ports', 'restart', 'depends_on', 'volumes']
+                }
+
+                # Création du conteneur
                 container = client.containers.run(
                     image=image,
                     name=container_name,
-                    labels=self.traefikRoute(self.name),
+                    labels=self.traefikRoute(container_name),
                     ports=port_mappings,
+                    volumes=docker_volumes,
                     detach=True,
                     network='traefik-net',
-                    **options)
+                    **options
+                )
 
                 print(f"Container {service_name} created with ID: {container.id}")
                 self.addDockerBDD(request)
-                dns=adddns(self.name)
+                adddns(container_name)
                 print(f"Container {service_name} added to database")
+
             return "Containers created successfully"
 
         except (errors.DockerException, errors.APIError, yaml.YAMLError, ValueError) as e:
             return f"Error creating containers: {str(e)}"
-
     def get_logs(self,name):
         """
         Fonction pour obtenir les logs d'un conteneur Docker.
@@ -413,4 +486,70 @@ class DockerService:
             print(f"Unexpected error: {e}")
 
         return None
+    def prepare_volumes(self, user, volume_names, path):
+        """
+        Prépare les volumes Docker en mappant les chemins locaux et réutilisant ceux déjà existants.
+        :param user: utilisateur (username)
+        :param volume_names: liste de noms de volumes à créer ou utiliser
+        :return: dictionnaire au format attendu par Docker SDK
+        """
+        docker_volumes = {}
+
+        for volume_name in volume_names:
+            volume_path = os.path.abspath(f"{src}/{path}/{user}/volumes/{volume_name}")
+
+            # Crée le dossier local s'il n'existe pas
+            os.makedirs(volume_path, exist_ok=True)
+
+            # Enregistre le mapping {local_path: {'bind': '/chemin_dans_conteneur', 'mode': 'rw'}}
+            docker_volumes[volume_path] = {'bind': f"/data/{volume_name}", 'mode': 'rw'}
+
+        return docker_volumes
+
+    def list_volumes(self, user):
+        """
+        Liste les volumes Docker pour un utilisateur donné.
+        :param user: utilisateur (username)
+        :return: liste des volumes
+        """
+        user_path = os.path.abspath(f"{src}/filedir/{user}/volumes")
+        if not os.path.exists(user_path):
+            return []
+
+        volumes = []
+        for volume_name in os.listdir(user_path):
+            volume_path = os.path.join(user_path, volume_name)
+            if os.path.isdir(volume_path):
+                volumes.append({
+                    'name': volume_name,
+                    'path': volume_path,
+                    'date': datetime.fromtimestamp(os.path.getctime(volume_path)).strftime('%Y-%m-%d %H:%M:%S'),                })
+        return volumes
+
+    def delete_volumes(self, user, volume_name):
+        """
+        Supprime les volumes Docker pour un utilisateur donné.
+        :param user: utilisateur (username)
+        :return: message de succès ou d'erreur
+        """
+        volume_path = os.path.abspath(f"{src}/filedir/{user}/volumes")
+        if not os.path.exists(volume_path):
+            return "No volumes found for this user."
+
+        try:
+            full_volume_path = os.path.join(volume_path, volume_name)
+            if os.path.exists(full_volume_path):
+                shutil.rmtree(full_volume_path)  # Supprime le dossier du volume
+                return f"Volume '{volume_name}' deleted successfully."
+            else:
+                return f"Volume '{volume_name}' does not exist."
+
+        except OSError as e:
+            return f"Error deleting volume '{volume_name}': {str(e)}"
+
+
+
+
+
+
 
